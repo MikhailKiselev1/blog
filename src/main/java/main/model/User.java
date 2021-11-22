@@ -41,20 +41,9 @@ public class User {
     private String photo;
 
     @Nullable
-    @ManyToMany
-    @JoinTable (name = "User2Post", joinColumns = {@JoinColumn (name = "user_id")}, inverseJoinColumns = {@JoinColumn (name = "post_id")})
+    @OneToMany
+    @JoinColumn(name = "user_id")
     private List<Post> posts;
-
-    @Nullable
-    @ManyToMany
-    @JoinTable (name = "User2PostVotes", joinColumns = {@JoinColumn (name = "user_id")}, inverseJoinColumns = {@JoinColumn (name = "post_vote_id")})
-    private List<PostVotes> postsVotes;
-
-    @Nullable
-    @ManyToMany
-    @JoinTable (name = "User2PostComments", joinColumns = {@JoinColumn (name = "user_id")}, inverseJoinColumns = {@JoinColumn (name = "post_comment_id")})
-    private List<PostComments> postComments;
-
 
     @OneToMany
     @JoinColumn(name = "moderator_id")

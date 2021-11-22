@@ -23,19 +23,14 @@ public class PostComments {
     private PostComments parentPostComments;
 
     @Nullable
-    @ManyToMany
-    @JoinTable (name = "Post2PostComments", joinColumns = {@JoinColumn (name = "post_comment_id")}, inverseJoinColumns = {@JoinColumn (name = "post_id")})
-    private List<Post> posts;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Nullable
-    @ManyToMany
-    @JoinTable (name = "User2PostComments", joinColumns = {@JoinColumn (name = "post_comment_id")}, inverseJoinColumns = {@JoinColumn (name = "user_id")})
-    private List<User> users;
 
     @NotNull
     private Date time;

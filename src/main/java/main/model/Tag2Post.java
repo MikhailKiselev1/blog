@@ -1,4 +1,4 @@
-package main.model.dependencies;
+package main.model;
 
 import lombok.Data;
 import main.model.Post;

@@ -21,11 +21,11 @@ public class PostVotes {
     @NotNull
     private byte value;
 
-    @ManyToMany
-    @JoinTable (name = "User2PostVotes", joinColumns = {@JoinColumn (name = "post_vote_id")}, inverseJoinColumns = {@JoinColumn (name = "user_id")})
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private List<User> users;
 
-    @ManyToMany
-    @JoinTable (name = "Post2PostVotes", joinColumns = {@JoinColumn (name = "post_vote_id")}, inverseJoinColumns = {@JoinColumn (name = "post_id")})
-    private List<Post> posts;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "post_id")
+    private Post post;
 }

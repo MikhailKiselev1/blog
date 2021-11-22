@@ -2,10 +2,9 @@ package main.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,4 +16,8 @@ public class Tags {
 
     @NotNull
     private String name;
+
+    @ManyToMany
+    @JoinTable(name = "Tag2Post", joinColumns = {@JoinColumn (name = "tag_id")}, inverseJoinColumns = {@JoinColumn (name = "post_id")})
+    private List<Post> posts;
 }

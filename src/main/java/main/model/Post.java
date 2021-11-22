@@ -30,13 +30,12 @@ public class Post {
 
     @Nullable
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "moderator_id", columnDefinition = "id")
-    private  User moderator;
+    @JoinColumn(name = "moderator_id")
+    private User moderator;
 
     @Nullable
-    @ManyToMany
-    @JoinTable (name = "User2Post", joinColumns = {@JoinColumn (name = "post_id")}, inverseJoinColumns = {@JoinColumn (name = "user_id")})
-    private List<User> users;
+    @ManyToOne
+    private User user;
 
     @NotNull
     private Date time;
@@ -51,8 +50,12 @@ public class Post {
     @Column(name = "view_count")
     private int viewCount;
 
+
     @Nullable
-    @ManyToMany
-    @JoinTable (name = "Post2PostComments", joinColumns = {@JoinColumn (name = "post_id")}, inverseJoinColumns = {@JoinColumn (name = "post_comment_id")})
+    @OneToMany
     private List<PostComments> postComments;
+
+    @ManyToMany
+    @JoinTable(name = "Tag2Post", joinColumns = {@JoinColumn (name = "post_id")}, inverseJoinColumns = {@JoinColumn (name = "tag_id")})
+    private List<Tags> posts;
 }
