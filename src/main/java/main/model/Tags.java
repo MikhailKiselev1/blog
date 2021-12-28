@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class Tags {
 
+    @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;

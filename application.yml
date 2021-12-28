@@ -7,4 +7,19 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+      show-sql: true
+      current_session_context_class: thread
+      hbm2ddl:
+        auto: update
+
+
+blog:
+  title: DevPub
+  subtitle: Рассказы Разработчиков
+  phone: +7 930 070-73-79
+  email: pks52@mail.ru
+  copyright: Киселев Михаил
+  copyrightFrom: 2005
+  MULTIUSER_MODE: false
+  POST_PREMODERATION: true
+  STATISTICS_IS_PUBLIC: true

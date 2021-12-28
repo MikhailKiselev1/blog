@@ -1,18 +1,17 @@
 package main.model;
 
 import lombok.Data;
-import main.model.enums.SettingName;
-import main.model.enums.SettingValue;
+import main.model.enums.GlobalSettingValue;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
+@Table(name = "global_setting")
 public class GlobalSetting {
 
+    @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -20,9 +19,7 @@ public class GlobalSetting {
     @NotNull
     private String code;
 
-    @NotNull
-    private SettingName name;
+    private GlobalSettingValue globalSettingValue;
 
-    @NotNull
-    private SettingValue value;
+    private boolean value;
 }

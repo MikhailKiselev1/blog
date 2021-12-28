@@ -1,7 +1,8 @@
 package main.model.enums;
 
-public enum SettingName {
+public enum GlobalSettingValue {
+
     MULTIUSER_MODE,
     POST_PREMODERATION,
-    STATISTIC_IS_PUBLIC
+    STATISTICS_IS_PUBLIC;
 }

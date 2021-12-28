@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class PostVotes {
 
+    @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -21,7 +22,7 @@ public class PostVotes {
     @NotNull
     private byte value;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<User> users;
 

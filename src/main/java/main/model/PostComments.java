@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 public class PostComments {
 
+    @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
