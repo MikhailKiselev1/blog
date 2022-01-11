@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Data
-@Table(name = "Post2PostVotes")
+@Table(name = "tag2post")
 public class Tag2Post {
 
     @EmbeddedId

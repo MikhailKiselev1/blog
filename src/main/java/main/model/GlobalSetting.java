@@ -1,7 +1,9 @@
 package main.model;
 
 import lombok.Data;
-import main.model.enums.GlobalSettingValue;
+import main.model.enums.MultiuserMode;
+import main.model.enums.PostPremoderation;
+import main.model.enums.StatisticsIsPublic;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,7 +21,12 @@ public class GlobalSetting {
     @NotNull
     private String code;
 
-    private GlobalSettingValue globalSettingValue;
+    @Column(name = "MULTIUSER_MODE")
+    private MultiuserMode mode;
 
-    private boolean value;
+    @Column(name = "POST_PREMODERATION")
+    private PostPremoderation postPremoderation;
+
+    @Column(name = "STATISTICS_IS_PUBLIC")
+    private StatisticsIsPublic statisticsIsPublic;
 }

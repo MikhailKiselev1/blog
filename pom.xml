@@ -8,9 +8,30 @@
     <artifactId>Blog</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-maven-plugin</artifactId>
+                        <version>8.2.3</version>
+                        <configuration>
+                            <user>root</user>
+                            <password>testtest</password>
+                            <schemas>
+                                <schema>blog</schema>
+                            </schemas>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <flyway.user>root</flyway.user>
+        <flyway.password>testtest</flyway.password>
+        <flyway.schemas>blog</flyway.schemas>
     </properties>
 
 

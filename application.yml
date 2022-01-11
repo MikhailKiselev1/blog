@@ -3,14 +3,13 @@ spring:
     url: jdbc:mysql://localhost:3306/blog?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: testtest
-
   jpa:
     hibernate:
-      ddl-auto: none
       show-sql: true
-      current_session_context_class: thread
       hbm2ddl:
-        auto: update
+        auto: create
+
+
 
 
 blog:

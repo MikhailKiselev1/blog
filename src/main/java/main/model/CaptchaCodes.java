@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Entity
 @Data
+@Table(name = "captcha_codes")
 public class CaptchaCodes {
 
     @Id
