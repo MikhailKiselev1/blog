@@ -1,0 +1,5 @@
+CREATE TABLE tags (
+  id INT NOT NULL,
+   name VARCHAR(255) NULL,
+   CONSTRAINT pk_tags PRIMARY KEY (id)
+);

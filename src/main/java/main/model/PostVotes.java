@@ -9,10 +9,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "post_votes")
 public class PostVotes {
 
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
