@@ -21,12 +21,9 @@ public class GlobalSetting {
     @NotNull
     private String code;
 
-    @Column(name = "MULTIUSER_MODE")
-    private MultiuserMode mode;
+    @NotNull
+    private String name;
 
-    @Column(name = "POST_PREMODERATION")
-    private PostPremoderation postPremoderation;
-
-    @Column(name = "STATISTICS_IS_PUBLIC")
-    private StatisticsIsPublic statisticsIsPublic;
+    @NotNull
+    private String value;
 }

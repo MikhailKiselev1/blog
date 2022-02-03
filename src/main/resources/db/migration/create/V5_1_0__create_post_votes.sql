@@ -1,8 +1,8 @@
 CREATE TABLE post_votes (
   id INT NOT NULL,
+   post_id INT NULL,
    time datetime NULL,
    value SMALLINT NULL,
-   post_id INT NULL,
    CONSTRAINT pk_post_votes PRIMARY KEY (id)
 );
 

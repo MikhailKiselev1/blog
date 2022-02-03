@@ -3,30 +3,22 @@ package main.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
 @Table(name = "tag2post")
 public class Tag2Post {
 
-    @EmbeddedId
-    private Key key;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
+    @Column(name = "post_id")
+    @NotNull
+    private int postId;
 
-
-    @Data
-    @Embeddable
-    public static class Key implements Serializable {
-
-        static final long serialVersionUID = 1L;
-
-        @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "post_id", columnDefinition = "id")
-        private Post post;
-
-        @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "tag_id", columnDefinition = "id")
-        private Tags tag;
-    }
+    @Column(name = "tag_id")
+    @NotNull
+    private int tagId;
 }

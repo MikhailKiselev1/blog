@@ -1,6 +1,7 @@
 package main.model;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,17 +17,19 @@ public class PostVotes {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @Nullable
+    private List<User> users;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     @NotNull
     private Date time;
 
     @NotNull
     private byte value;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private List<User> users;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id")
-    private Post post;
 }

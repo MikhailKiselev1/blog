@@ -56,7 +56,4 @@ public class Post {
     @OneToMany
     private List<PostComments> postComments;
 
-    @ManyToMany
-    @JoinTable(name = "Tag2Post", joinColumns = {@JoinColumn (name = "post_id")}, inverseJoinColumns = {@JoinColumn (name = "tag_id")})
-    private List<Tags> posts;
 }
