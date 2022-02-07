@@ -1,29 +1,27 @@
 package main.model;
 
 import lombok.Data;
-import main.model.enums.MultiuserMode;
-import main.model.enums.PostPremoderation;
-import main.model.enums.StatisticsIsPublic;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
-@Table(name = "global_setting")
+@Table(name = "global_settings")
+@NoArgsConstructor
 public class GlobalSetting {
 
     @Id
-    @NotNull
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String code;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String value;
 }

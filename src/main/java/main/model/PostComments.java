@@ -1,41 +1,36 @@
 package main.model;
 
 import lombok.Data;
-import org.springframework.lang.Nullable;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-@Entity
 @Data
-@Table(name = "post_comments")
+@NoArgsConstructor
+@Entity
+@Table(name = "posts_comments")
 public class PostComments {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @Nullable
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "parent_id", columnDefinition = "id")
-    private PostComments parentPostComments;
+    @Column(name = "parent_id", columnDefinition = "INT")
+    private int parentId;
 
-    @Nullable
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
 
-    @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post postId;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "DATETIME")
     private Date time;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
+
 }

@@ -1,59 +1,58 @@
 package main.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import main.model.enums.ModerationStatus;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GeneratorType;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
-@Entity
 @Data
+@NoArgsConstructor
+@Entity
 @Table(name = "posts")
 public class Post {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
-    @Column(name = "is_active")
-    private boolean isActive;
+    @Column(name = "is_active",nullable = false, columnDefinition = "TINYINT")
+    private int isActive;
 
-    @NotNull
-    @Column(name = "moderation_status")
+    @Column(name = "moderation_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ModerationStatus moderationStatus = ModerationStatus.NEW;
 
-    @Nullable
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "moderator_id")
-    private User moderator;
+    @Column(name = "moderator_id", columnDefinition = "INT")
+    private int moderatorId;
 
-    @Nullable
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "DATETIME")
     private Date time;
 
-    @NotNull
-    private String tittle;
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
+    private String title;
 
-    @NotNull
-    private  String text;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String text;
 
-    @NotNull
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false, columnDefinition = "INT")
     private int viewCount;
 
+    @OneToMany(mappedBy = "postsId", cascade = CascadeType.ALL)
+    private List<PostVotes> postVotesList;
 
-    @Nullable
-    @OneToMany
-    private List<PostComments> postComments;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "tags2post",
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+    )
+    private List<Tags> tagsList;
 
 }

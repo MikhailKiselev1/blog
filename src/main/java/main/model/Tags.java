@@ -1,22 +1,24 @@
 package main.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-@Data
 @Table(name = "tags")
+@Data
+@NoArgsConstructor
 public class Tags {
-
     @Id
-    @NotNull
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
 
+    @ManyToMany(mappedBy = "tagsList")
+    private List<Post> postsWithTags;
 }

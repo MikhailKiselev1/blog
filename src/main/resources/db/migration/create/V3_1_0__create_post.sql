@@ -1,16 +1,14 @@
 CREATE TABLE posts (
-  id INT NOT NULL,
-   is_active BIT(1) NULL,
-   moderation_status INT NULL,
+  id INT AUTO_INCREMENT NOT NULL,
+   is_active TINYINT NOT NULL,
+   moderation_status VARCHAR(255) NOT NULL,
    moderator_id INT NULL,
-   user_id INT NULL,
-   time datetime NULL,
-   tittle VARCHAR(255) NULL,
-   text VARCHAR(255) NULL,
-   view_count INT NULL,
+   user_id INT NOT NULL,
+   time datetime NOT NULL,
+   title VARCHAR(255) NOT NULL,
+   text TEXT NOT NULL,
+   view_count INT NOT NULL,
    CONSTRAINT pk_posts PRIMARY KEY (id)
 );
-
-ALTER TABLE posts ADD CONSTRAINT FK_POSTS_ON_MODERATOR FOREIGN KEY (moderator_id) REFERENCES users (id);
 
 ALTER TABLE posts ADD CONSTRAINT FK_POSTS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);

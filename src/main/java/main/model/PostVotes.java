@@ -1,35 +1,33 @@
 package main.model;
 
 import lombok.Data;
-import org.springframework.lang.Nullable;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Data
 @Table(name = "post_votes")
+@Data
+@NoArgsConstructor
 public class PostVotes {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    @Nullable
-    private List<User> users;
+    @Column(name = "user_id", nullable = false, columnDefinition = "INT")
+    private int userId;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post postsId;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "DATETIME")
     private Date time;
 
-    @NotNull
-    private byte value;
+    @Column(nullable = false, columnDefinition = "TINYINT")
+    private int value;
 
 }

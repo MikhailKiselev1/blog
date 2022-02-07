@@ -1,53 +1,49 @@
 package main.model;
 
+
 import lombok.Data;
-import org.springframework.lang.Nullable;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
-@Entity
 @Data
+@NoArgsConstructor
+@Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @NotNull
-    @Column(name = "is_moderator")
-    private boolean isModerator;
+    @Column(name = "is_moderator", nullable = false, columnDefinition = "TINYINT")
+    private int isModerator;
 
-    @NotNull
-    @Column(name = "reg_time")
+    @Column(name = "reg_time", nullable = false, columnDefinition = "DATETIME")
     private Date regTime;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String email;
 
-    @NotNull
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String password;
 
-    @Nullable
+    @Column(nullable = true, columnDefinition = "VARCHAR(255)")
     private String code;
 
-    @Nullable
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String photo;
 
-    @Nullable
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<Post> posts;
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+    private List<Post> userPosts;
 
-    @OneToMany
-    @JoinColumn(name = "moderator_id")
-    private List<Post> postForModerator;
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+    private List<PostComments> postCommentsUser;
 
 }
