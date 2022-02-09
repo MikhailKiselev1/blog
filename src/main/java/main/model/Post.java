@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import main.model.enums.ModerationStatus;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Post {
     private User userId;
 
     @Column(nullable = false, columnDefinition = "DATETIME")
-    private Date time;
+    private LocalDateTime time;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
@@ -49,10 +50,13 @@ public class Post {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "tags2post",
+            name = "tag2post",
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
     private List<Tags> tagsList;
+
+    @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL)
+    private List<PostComments> postComments;
 
 }

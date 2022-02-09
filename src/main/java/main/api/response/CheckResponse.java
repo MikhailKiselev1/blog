@@ -8,6 +8,8 @@ import main.model.User;
 public class CheckResponse {
 
     @JsonProperty("result")
-    private boolean result = false;
+    boolean result = false;
 
+    @JsonProperty("user")
+    CheckUserResponse checkUserResponse = null;
 }
