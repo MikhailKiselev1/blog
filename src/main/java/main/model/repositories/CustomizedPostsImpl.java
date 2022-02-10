@@ -1,5 +1,6 @@
-package main.model.service;
+package main.model.repositories;
 
+import main.model.Post;
 import main.model.repositories.CustomizedPosts;
 
 import javax.persistence.EntityManager;
@@ -12,7 +13,7 @@ public class CustomizedPostsImpl implements CustomizedPosts {
     private EntityManager em;
 
     @Override
-    public List getActionCurrentNewPosts() {
+    public List<Post> getActionCurrentNewPosts() {
         return em.createQuery(" from posts where is_active = 1, moderation_status = accepted, begin < NOW()").getResultList();
     }
 }

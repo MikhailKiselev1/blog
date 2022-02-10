@@ -1,10 +1,11 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import main.model.service.CustomizedPostsImpl;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class PostsResponce {
 
     @JsonProperty("id")
@@ -12,12 +13,4 @@ public class PostsResponce {
 
     @JsonProperty("posts")
     private List<PostResponce> postResponces;
-
-    CustomizedPostsImpl customizedPosts;
-
-    public PostsResponce() {
-        customizedPosts = new CustomizedPostsImpl();
-        postResponces = customizedPosts.getActionCurrentNewPosts();
-        count = postResponces.size();
-    }
 }

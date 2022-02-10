@@ -1,21 +1,18 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import main.model.User;
 import main.model.repositories.UserRepository;
 
 import java.util.Optional;
 
+@Data
 public class UserResponse {
-    private User user;
-
-    public UserResponse(User user) {
-        this.user = user;
-    }
 
     @JsonProperty("id")
-    int id = user.getId();
+    int id;
 
     @JsonProperty("name")
-    String name = user.getName();
+    String name;
 }

@@ -1,10 +1,10 @@
 package main.controller;
 
-import main.api.response.CheckResponse;
 import main.api.response.InitResponse;
-import main.api.response.PostsResponce;
 import main.api.response.SettingResponse;
+import main.model.service.CheckService;
 import main.model.service.GlobalSettingService;
+import main.model.service.PostService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,15 +13,15 @@ public class ApiGeneralController {
 
     private final InitResponse initResponse;
     private final GlobalSettingService globalSettingService;
-    private final CheckResponse checkResponse;
-    private final PostsResponce postsResponce;
+    private final CheckService checkService;
+    private final PostService postsService;
 
     public ApiGeneralController(InitResponse initResponse, GlobalSettingService globalSettingService,
-                                CheckResponse checkResponce, PostsResponce postsResponce) {
+                                CheckService checkService, PostService postsService) {
         this.initResponse = initResponse;
         this.globalSettingService = globalSettingService;
-        this.checkResponse = checkResponce;
-        this.postsResponce = postsResponce;
+        this.checkService = checkService;
+        this.postsService = postsService;
     }
 
     @GetMapping("/api/init")
@@ -35,12 +35,12 @@ public class ApiGeneralController {
     }
 
     @GetMapping("/api/auth/check")
-    public CheckResponse check() {
-        return checkResponse;
+    public CheckService check() {
+        return checkService;
     }
 
     @GetMapping("/api/post")
-    public PostsResponce post() {
-        return postsResponce;
+    public PostService post() {
+        return postsService;
     }
 }

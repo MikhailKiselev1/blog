@@ -6,7 +6,6 @@ import main.model.enums.ModerationStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -54,7 +53,7 @@ public class Post {
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
-    private List<Tags> tagsList;
+    private List<Tag> tagsList;
 
     @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL)
     private List<PostComments> postComments;

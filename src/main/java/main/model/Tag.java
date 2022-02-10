@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "tags")
 @Data
 @NoArgsConstructor
-public class Tags {
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
