@@ -1,6 +1,8 @@
 package main.controller;
 
+import main.api.response.CheckResponse;
 import main.api.response.InitResponse;
+import main.api.response.PostsResponse;
 import main.api.response.SettingResponse;
 import main.model.service.CheckService;
 import main.model.service.GlobalSettingService;
@@ -35,12 +37,12 @@ public class ApiGeneralController {
     }
 
     @GetMapping("/api/auth/check")
-    public CheckService check() {
-        return checkService;
+    public CheckResponse check() {
+        return checkService.getCheck();
     }
 
     @GetMapping("/api/post")
-    public PostService post() {
-        return postsService;
+    public PostsResponse post() {
+        return postsService.getPost();
     }
 }

@@ -1,7 +1,7 @@
 package main.model.service;
 
-import main.api.response.PostResponce;
-import main.api.response.PostsResponce;
+import main.api.response.dto.PostDto;
+import main.api.response.PostsResponse;
 import main.api.response.UserResponse;
 import main.model.User;
 import main.model.repositories.CustomizedPostsImpl;
@@ -13,18 +13,18 @@ import java.util.List;
 @Service
 public class PostService {
 
-    PostsResponce postsResponce;
+    PostsResponse postsResponce;
     CustomizedPostsImpl customizedPosts;
-    List<PostResponce> postResponceList;
+    List<PostDto> postResponceList;
     UserResponse userResponse;
     User user;
 
-    public PostsResponce getPost() {
-        postsResponce = new PostsResponce();
+    public PostsResponse getPost() {
+        postsResponce = new PostsResponse();
         customizedPosts = new CustomizedPostsImpl();
         postResponceList = new ArrayList<>();
         customizedPosts.getActionCurrentNewPosts().stream().forEach(p -> {
-            PostResponce postResponce = new PostResponce();
+            PostDto postResponce = new PostDto();
             postResponce.setId(p.getId());
             postResponce.setTimestamp(p.getTime());
             userResponse = new UserResponse();
@@ -40,7 +40,7 @@ public class PostService {
             postResponce.setViewCount(p.getViewCount());
             postResponceList.add(postResponce);
         });
-        postsResponce.setPostResponces(postResponceList);
+        postsResponce.setPostsDto(postResponceList);
         postsResponce.setCount(postResponceList.size());
         return postsResponce;
     }

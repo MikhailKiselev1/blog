@@ -2,15 +2,16 @@ package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import main.api.response.dto.PostDto;
 
 import java.util.List;
 
 @Data
-public class PostsResponce {
+public class PostsResponse {
 
-    @JsonProperty("id")
+    @JsonProperty("count")
     private int count;
 
     @JsonProperty("posts")
-    private List<PostResponce> postResponces;
+    private List<PostDto> postsDto;
 }

@@ -2,7 +2,7 @@ package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import main.model.User;
+import main.api.response.dto.CheckUserDto;
 
 @Data
 public class CheckResponse {
@@ -10,6 +10,6 @@ public class CheckResponse {
     @JsonProperty("result")
     boolean result;
 
-    @JsonProperty("user")
-    CheckUserResponse checkUserResponse;
+//    @JsonProperty("user")
+//    CheckUserDto checkUserDto;
 }

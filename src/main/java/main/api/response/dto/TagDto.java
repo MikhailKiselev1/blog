@@ -1,10 +1,10 @@
-package main.api.response;
+package main.api.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class TagResponse {
+public class TagDto {
 
     @JsonProperty("name")
     String name;

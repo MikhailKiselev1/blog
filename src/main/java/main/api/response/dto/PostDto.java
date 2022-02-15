@@ -1,7 +1,8 @@
-package main.api.response;
+package main.api.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import main.api.response.UserResponse;
 import main.api.response.enums.PostMode;
 import main.model.Post;
 import main.model.User;
@@ -9,7 +10,7 @@ import main.model.User;
 import java.time.LocalDateTime;
 
 @Data
-public class PostResponce {
+public class PostDto {
 
     @JsonProperty("id")
     int id;

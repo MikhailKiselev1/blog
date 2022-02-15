@@ -1,6 +1,6 @@
 package main.model.service;
 
-import main.api.response.TagResponse;
+import main.api.response.dto.TagDto;
 import main.api.response.TagsResponse;
 import main.model.Tag;
 import main.model.repositories.TagRepository;
@@ -9,16 +9,15 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TagService {
 
     private TagsResponse tagsResponse;
-    private TagResponse tagResponse;
+    private TagDto tagDto;
     private TagRepository tagRepository;
     List<Tag> tagList;
-    List<TagResponse> finishTagList;
+    List<TagDto> finishTagList;
     private Tag popularTag;
     private int tagsCount;
     private double k;
@@ -33,10 +32,10 @@ public class TagService {
         tagsCount = tagList.size();
         k = Math.round(1 / (popularTag.getPostsWithTags().size() / tagsCount));
         tagList.forEach(t -> {
-            tagResponse = new TagResponse();
-            tagResponse.setName(t.getName());
-            tagResponse.setWeight(Math.round(t.getPostsWithTags().size() / tagsCount * k));
-            finishTagList.add(tagResponse);
+            tagDto = new TagDto();
+            tagDto.setName(t.getName());
+            tagDto.setWeight(Math.round(t.getPostsWithTags().size() / tagsCount * k));
+            finishTagList.add(tagDto);
         });
         tagsResponse.setTags(finishTagList);
         return tagsResponse;
