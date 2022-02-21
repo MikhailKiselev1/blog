@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class TagDto {
+public class PostUserDto {
+
+    @JsonProperty("id")
+    private int id;
 
     @JsonProperty("name")
     private String name;
-
-    @JsonProperty("weight")
-    private double weight;
 }

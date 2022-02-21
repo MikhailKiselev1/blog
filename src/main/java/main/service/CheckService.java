@@ -1,4 +1,4 @@
-package main.model.service;
+package main.service;
 
 import main.api.response.CheckResponse;
 import org.springframework.stereotype.Service;

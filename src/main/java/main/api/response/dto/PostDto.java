@@ -2,10 +2,6 @@ package main.api.response.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import main.api.response.UserResponse;
-import main.api.response.enums.PostMode;
-import main.model.Post;
-import main.model.User;
 
 import java.time.LocalDateTime;
 
@@ -13,29 +9,29 @@ import java.time.LocalDateTime;
 public class PostDto {
 
     @JsonProperty("id")
-    int id;
+    private int id;
 
     @JsonProperty("timestamp")
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 
     @JsonProperty("user")
-    UserResponse user;
+    private PostUserDto user;
 
     @JsonProperty("title")
-    String title;
+    private String title;
 
     @JsonProperty("announce")
-    String announce;
+    private String announce;
 
     @JsonProperty("likeCount")
-    int likeCount;
+    private int likeCount;
 
     @JsonProperty("dislikeCount")
-    int dislikeCount;
+    private int dislikeCount;
 
     @JsonProperty("commentCount")
-    int commentCount;
+    private int commentCount;
 
     @JsonProperty("viewCount")
-    int viewCount;
+    private int viewCount;
 }

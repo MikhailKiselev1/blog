@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class User {
     private int isModerator;
 
     @Column(name = "reg_time", nullable = false, columnDefinition = "DATETIME")
-    private Date regTime;
+    private LocalDateTime regTime;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;

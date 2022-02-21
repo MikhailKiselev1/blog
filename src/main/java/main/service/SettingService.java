@@ -1,10 +1,10 @@
-package main.model.service;
+package main.service;
 
 import main.api.response.SettingResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GlobalSettingService {
+public class SettingService {
 
     public SettingResponse getInitGlobalSetting() {
         SettingResponse settingResponse = new SettingResponse();

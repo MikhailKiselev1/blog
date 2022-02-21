@@ -1,7 +1,6 @@
-package main.model.repositories;
+package main.repositories;
 
 import main.model.Post;
-import main.model.repositories.CustomizedPosts;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

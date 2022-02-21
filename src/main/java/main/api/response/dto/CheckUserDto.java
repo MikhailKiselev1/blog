@@ -8,23 +8,23 @@ import main.model.User;
 public class CheckUserDto {
 
     @JsonProperty("id")
-    int id;
+    private int id;
 
     @JsonProperty("name")
-    String name;
+    private String name;
 
     @JsonProperty("photo")
-    String photo;
+    private String photo;
 
     @JsonProperty("email")
-    String email;
+    private String email;
 
     @JsonProperty("moderation")
-    boolean moderation;
+    private boolean moderation;
 
     @JsonProperty("moderatorCount")
-    int moderatorCount;
+    private int moderatorCount;
 
     @JsonProperty("setting")
-    boolean setting;
+    private boolean setting;
 }
