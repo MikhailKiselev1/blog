@@ -51,37 +51,37 @@ public class ApiGeneralController {
         return new ResponseEntity<>(postsService.getPost(offset,limit,mode), HttpStatus.OK);
     }
 
-    @GetMapping("/post/search")
-    public ResponseEntity<PostsResponse> postSearch(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                    @PathVariable @Nullable String mode, @PathVariable String query) {
-        return new ResponseEntity<>(postsService.getPostSearch(offset,limit,mode, query), HttpStatus.OK);
-    }
-
-    @GetMapping("/post/byDate")
-    public ResponseEntity<PostsResponse> postByDate(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                    @PathVariable @Nullable String mode, @PathVariable String date) {
-        return new ResponseEntity<>(postsService.getPostByDate(offset,limit, mode, date), HttpStatus.OK);
-    }
-
-    @GetMapping("/post/byTag")
-    public ResponseEntity<PostsResponse> postByTag(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                   @PathVariable @Nullable String mode, @PathVariable String tag) {
-        return new ResponseEntity<>(postsService.getPostByTag(offset, limit, mode, tag), HttpStatus.OK);
-    }
-
-    @GetMapping("/post/{ID}")
-    public ResponseEntity<PostIdResponse> postById(@PathVariable Integer id) {
-        return new ResponseEntity<>(postsService.getPostById(id), HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping("/tag")
-    public TagsResponse tag(@PathVariable String query) {
-        return tagService.getTag(query);
-    }
-
-    @GetMapping("/calendar")
-    public CalendarResponse calendar(@PathVariable String year) {
-        return calendarService.getCalendar(year);
-    }
+//    @GetMapping("/post/search")
+//    public ResponseEntity<PostsResponse> postSearch(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
+//                                    @PathVariable @Nullable String mode, @PathVariable String query) {
+//        return new ResponseEntity<>(postsService.getPostSearch(offset,limit,mode, query), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/post/byDate")
+//    public ResponseEntity<PostsResponse> postByDate(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
+//                                    @PathVariable @Nullable String mode, @PathVariable String date) {
+//        return new ResponseEntity<>(postsService.getPostByDate(offset,limit, mode, date), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/post/byTag")
+//    public ResponseEntity<PostsResponse> postByTag(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
+//                                   @PathVariable @Nullable String mode, @PathVariable String tag) {
+//        return new ResponseEntity<>(postsService.getPostByTag(offset, limit, mode, tag), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/post/{ID}")
+//    public ResponseEntity<PostIdResponse> postById(@PathVariable Integer id) {
+//        return new ResponseEntity<>(postsService.getPostById(id), HttpStatus.NOT_FOUND);
+//    }
+//
+//    @GetMapping("/tag")
+//    public TagsResponse tag(@PathVariable String query) {
+//        return tagService.getTag(query);
+//    }
+//
+//    @GetMapping("/calendar")
+//    public CalendarResponse calendar(@PathVariable String year) {
+//        return calendarService.getCalendar(year);
+//    }
 
 }
