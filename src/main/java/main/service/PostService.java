@@ -16,6 +16,7 @@ import main.repositories.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,10 +39,11 @@ public class PostService {
         postDtoList = new ArrayList<>();
         PostDto postDto = new PostDto();
         postDto.setId(345);
-        postDto.setTimestamp(LocalDateTime.now());
+        postDto.setTimestamp(LocalTime.now().getNano());
         postUserDto = new PostUserDto();
         postUserDto.setId(88);
-        postUserDto.setName("Дмитрий петров");
+        postUserDto.setName("Дмитрий Петров");
+        postDto.setUser(postUserDto);
         postDto.setTitle("Заголовок поста");
         postDto.setAnnounce("Тект анонса поста");
         postDto.setLikeCount(35);

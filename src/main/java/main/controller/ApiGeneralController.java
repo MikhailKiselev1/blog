@@ -17,7 +17,7 @@ public class ApiGeneralController {
     private final InitResponse initResponse;
     private final SettingService globalSettingService;
     private final CheckService checkService;
-    private final PostService postsService;
+    private final PostService postService;
     private final TagService tagService;
     private final CalendarService calendarService;
 
@@ -26,7 +26,7 @@ public class ApiGeneralController {
         this.initResponse = initResponse;
         this.globalSettingService = globalSettingService;
         this.checkService = checkService;
-        this.postsService = postsService;
+        this.postService = postsService;
         this.tagService = tagService;
         this.calendarService = calendarService;
     }
@@ -48,7 +48,7 @@ public class ApiGeneralController {
 
     @GetMapping("/post")
     public ResponseEntity<PostsResponse> post(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit, @PathVariable @Nullable String mode) {
-        return new ResponseEntity<>(postsService.getPost(offset,limit,mode), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPost(offset,limit,mode), HttpStatus.OK);
     }
 
 //    @GetMapping("/post/search")
@@ -73,12 +73,12 @@ public class ApiGeneralController {
 //    public ResponseEntity<PostIdResponse> postById(@PathVariable Integer id) {
 //        return new ResponseEntity<>(postsService.getPostById(id), HttpStatus.NOT_FOUND);
 //    }
-//
-//    @GetMapping("/tag")
-//    public TagsResponse tag(@PathVariable String query) {
-//        return tagService.getTag(query);
-//    }
-//
+
+    @GetMapping("/tag")
+    public TagsResponse tag(@PathVariable @Nullable String query) {
+        return tagService.getTag(query);
+    }
+
 //    @GetMapping("/calendar")
 //    public CalendarResponse calendar(@PathVariable String year) {
 //        return calendarService.getCalendar(year);
