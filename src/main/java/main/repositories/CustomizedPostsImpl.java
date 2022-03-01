@@ -1,6 +1,7 @@
 package main.repositories;
 
 import main.model.Post;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

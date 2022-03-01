@@ -12,7 +12,7 @@ public class PostDto {
     private int id;
 
     @JsonProperty("timestamp")
-    private long timestamp;
+    private int timestamp;
 
     @JsonProperty("user")
     private PostUserDto user;
