@@ -4,6 +4,7 @@ import main.api.response.dto.TagDto;
 import main.api.response.TagsResponse;
 import main.model.Tag;
 import main.repositories.TagRepository;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class TagService {
     private Tag popularTag;
     private int tagsCount;
     private double k;
+    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
     public TagsResponse getTag(String query) {
         tagList = new ArrayList<>();

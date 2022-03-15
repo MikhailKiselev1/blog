@@ -23,7 +23,7 @@ public class Post {
 
     @Column(name = "moderation_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ModerationStatus moderationStatus = ModerationStatus.NEW;
+    private ModerationStatus moderationStatus;
 
     @Column(name = "moderator_id", columnDefinition = "INT")
     private int moderatorId;

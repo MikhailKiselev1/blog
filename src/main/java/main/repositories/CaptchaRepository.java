@@ -1,7 +1,7 @@
 package main.repositories;
 
 import main.model.CaptchaCodes;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CaptchaRepository extends CrudRepository<CaptchaCodes, Integer> {
+public interface CaptchaRepository extends JpaRepository<CaptchaCodes, Integer> {
 }

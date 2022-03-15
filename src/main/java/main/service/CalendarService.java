@@ -1,7 +1,8 @@
 package main.service;
 
 import main.api.response.CalendarResponse;
-import main.repositories.CustomizedPostsImpl;
+import main.repositories.PostRepository;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,21 +13,22 @@ import java.util.TreeSet;
 @Service
 public class CalendarService {
 
-    private CustomizedPostsImpl customizedPosts;
+    private PostRepository postRepository;
     private CalendarResponse calendarResponse;
     private final DateTimeFormatter yearFormat = DateTimeFormatter.ofPattern("yyyy");
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
 
     public CalendarResponse getCalendar(String year) {
         if (year == null) {
             year = LocalDate.now().format(yearFormat);
         }
-        calendarResponse = new CalendarResponse();
+        calendarResponse = applicationContext.getBean("calendarResponse",CalendarResponse.class);
         TreeSet<String> years = new TreeSet<>();
         TreeMap<String, Integer> postCount = new TreeMap<>();
         String finalYear = year;
-        customizedPosts.getActionCurrentNewPosts().forEach(post -> {
+        postRepository.getActionCurrentNewPosts().forEach(post -> {
             years.add(post.getTime().format(yearFormat));
             if(post.getTime().format(yearFormat).equals(finalYear)) {
                 String key = post.getTime().format(day);

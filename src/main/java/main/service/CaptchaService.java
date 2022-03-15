@@ -5,6 +5,7 @@ import com.github.cage.GCage;
 import main.api.response.CaptchaResponse;
 import main.model.CaptchaCodes;
 import main.repositories.CaptchaRepository;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +14,12 @@ public class CaptchaService {
     private CaptchaCodes captchaCodes;
     private CaptchaResponse captchaResponse;
     private CaptchaRepository captchaRepository;
+    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
 
     public CaptchaResponse getCaptcha() {
         StringBuilder image = new StringBuilder("data:image/png;base64, ");
-        captchaResponse = new CaptchaResponse();
+        captchaResponse = applicationContext.getBean("captchaResponse", CaptchaResponse.class);
         captchaCodes = new CaptchaCodes();
         LocalDateTime time = LocalDateTime.now();
 
