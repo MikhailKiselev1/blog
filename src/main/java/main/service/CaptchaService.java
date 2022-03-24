@@ -5,21 +5,25 @@ import com.github.cage.GCage;
 import main.api.response.CaptchaResponse;
 import main.model.CaptchaCodes;
 import main.repositories.CaptchaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class CaptchaService {
+
 
     private CaptchaCodes captchaCodes;
     private CaptchaResponse captchaResponse;
+//    @Autowired
     private CaptchaRepository captchaRepository;
-    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
 
     public CaptchaResponse getCaptcha() {
         StringBuilder image = new StringBuilder("data:image/png;base64, ");
-        captchaResponse = applicationContext.getBean("captchaResponse", CaptchaResponse.class);
+        captchaResponse = new CaptchaResponse();
         captchaCodes = new CaptchaCodes();
         LocalDateTime time = LocalDateTime.now();
 

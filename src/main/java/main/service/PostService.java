@@ -12,6 +12,8 @@ import main.model.User;
 import main.repositories.PostRepository;
 import main.repositories.TagRepository;
 import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -27,22 +29,25 @@ public class PostService {
     private List<PostDto> postDtoList;
     private PostUserDto postUserDto;
     private User user;
-    private int count;
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @Autowired
     private TagRepository tagRepository;
+    @Autowired
     private PostRepository postRepository;
-    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
+
 
 
     public PostsResponse getPost(Integer offset, Integer limit, String mode) {
 
-        postsResponse = applicationContext.getBean("postsResponse", PostsResponse.class);
+        postsResponse = new PostsResponse();
         postDtoList = new ArrayList<>();
         ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.getActionCurrentNewPosts();
-        getSortedCollection(mode, actionCurrentNewPosts, offset, limit)
-            .stream().forEach(p -> postDtoList.add(addPostDto(p)));
+        if (!actionCurrentNewPosts.isEmpty()) {
+            getSortedCollection(mode, actionCurrentNewPosts, offset, limit)
+                    .stream().forEach(p -> postDtoList.add(addPostDto(p)));
+        }
         postsResponse.setPostsDto(postDtoList);
-        postsResponse.setCount(count);
+        postsResponse.setCount(postDtoList.size());
         return postsResponse;
     }
 
@@ -51,8 +56,8 @@ public class PostService {
             return getPost(offset, limit, mode);
         }
         else {
-            postsResponse = applicationContext.getBean("postsResponse", PostsResponse.class);
-            ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.getActionCurrentNewPosts();
+            postsResponse = new PostsResponse();
+            ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.findAll();
             postDtoList = new ArrayList<>();
             getSortedCollection(mode, actionCurrentNewPosts, offset, limit).stream().forEach(p -> {
                 if(p.getText().matches(query)) {
@@ -66,39 +71,43 @@ public class PostService {
     }
 
     public PostsResponse getPostByDate (Integer offset, Integer limit, String mode, String date) {
-        postsResponse = applicationContext.getBean("postsResponse", PostsResponse.class);
+        postsResponse = new PostsResponse();
         postDtoList = new ArrayList<>();
-        List<Post> filterDataList = postRepository.getActionCurrentNewPosts().stream()
+        List<Post> filterDataList = postRepository.findAll().stream()
                 .filter(post -> post.getTime().format(day).equals(date)).collect(Collectors.toList());
-        getSortedCollection(mode, filterDataList, offset, limit)
-                .stream().forEach(p -> postDtoList.add(addPostDto(p)));
+        if(!filterDataList.isEmpty()) {
+            getSortedCollection(mode, filterDataList, offset, limit)
+                    .stream().forEach(p -> postDtoList.add(addPostDto(p)));
+        }
         postsResponse.setPostsDto(postDtoList);
-        postsResponse.setCount(count);
+        postsResponse.setCount(postDtoList.size());
         return postsResponse;
     }
 
     public PostsResponse getPostByTag (Integer offset, Integer limit, String mode, String tag) {
-        postsResponse = applicationContext.getBean("postsResponse", PostsResponse.class);
+        postsResponse = new PostsResponse();
         postDtoList = new ArrayList<>();
         List<Tag> tagList = tagRepository.findAll();
         Tag searchTag = tagList.stream().filter(t -> t.getName().equals(tag)).findFirst().get();
-        List<Post> filterDataList = postRepository.getActionCurrentNewPosts().stream()
+        List<Post> filterDataList = postRepository.findAll().stream()
                 .filter(post -> post.getTagsList().contains(searchTag)).collect(Collectors.toList());
-        getSortedCollection(mode, filterDataList, offset, limit)
-                .forEach(p -> postDtoList.add(addPostDto(p)));
+        if(!filterDataList.isEmpty()) {
+            getSortedCollection(mode, filterDataList, offset, limit)
+                    .forEach(p -> postDtoList.add(addPostDto(p)));
+        }
         postsResponse.setPostsDto(postDtoList);
-        postsResponse.setCount(count);
+        postsResponse.setCount(postDtoList.size());
         return postsResponse;
     }
 
     public PostIdResponse getPostById (int id) {
-        PostIdResponse postIdResponse = applicationContext.getBean("PostIdResponse", PostIdResponse.class);
+        PostIdResponse postIdResponse = new PostIdResponse();
         Post post = postRepository.findById((long) id).get();
         post.setViewCount(post.getViewCount() + 1);
         // добавляю просмотр
         postIdResponse.setId(post.getId());
         postIdResponse.setTimestamp(post.getTime().getNano());
-        postUserDto = applicationContext.getBean("postUserDto", PostUserDto.class);
+        postUserDto = new PostUserDto();
         user = post.getUserId();
         postUserDto.setId(user.getId());
         postUserDto.setName(user.getName());
@@ -112,12 +121,12 @@ public class PostService {
         //--------- Создание Списка дто комментариев
         List<PostCommentsDto> postCommentsDtoList = new ArrayList<>();
         post.getPostComments().forEach( postComments -> {
-            PostCommentsDto postCommentsDto = applicationContext.getBean("postCommentsDto", PostCommentsDto.class);
+            PostCommentsDto postCommentsDto = new PostCommentsDto();
             postCommentsDto.setId(postComments.getId());
             postCommentsDto.setTimestamp(postComments.getTime().getTime());
             postCommentsDto.setText(postComments.getText());
             //----Создание дто пользователя
-            PostCommentsUserDto userDto = applicationContext.getBean("postCommentsUserDto", PostCommentsUserDto.class);
+            PostCommentsUserDto userDto = new PostCommentsUserDto();
             User user = postComments.getUserId();
             userDto.setId(user.getId());
             userDto.setName(user.getName());
@@ -133,7 +142,7 @@ public class PostService {
     }
 
     private PostDto addPostDto(Post p) {
-        PostDto postDto = applicationContext.getBean("postDto", PostDto.class);
+        PostDto postDto = new PostDto();
         postDto.setId(p.getId());
         postDto.setTimestamp(p.getTime().getNano());
         postUserDto = new PostUserDto();
@@ -183,7 +192,6 @@ public class PostService {
         for (int i = offset; i <= limit; i++) {
             finishList.add(startList.get(i));
         }
-        count = startList.size();
         return finishList;
     }
 }

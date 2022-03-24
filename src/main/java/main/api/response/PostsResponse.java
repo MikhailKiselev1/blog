@@ -9,13 +9,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Data
-@Component
 public class PostsResponse {
 
     @JsonProperty("count")
     private int count;
 
-    @Autowired
     @JsonProperty("posts")
     private List<PostDto> postsDto;
 }

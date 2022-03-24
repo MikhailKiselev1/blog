@@ -2,6 +2,7 @@ package main.controller;
 
 import main.api.response.*;
 import main.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -21,6 +22,7 @@ public class ApiGeneralController {
     private final TagService tagService;
     private final CalendarService calendarService;
 
+    @Autowired
     public ApiGeneralController(InitResponse initResponse, SettingService globalSettingService,
                                 CheckService checkService, PostService postsService, TagService tagService, CalendarService calendarService) {
         this.initResponse = initResponse;

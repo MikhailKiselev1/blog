@@ -4,6 +4,8 @@ import main.api.response.dto.TagDto;
 import main.api.response.TagsResponse;
 import main.model.Tag;
 import main.repositories.TagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -17,13 +19,13 @@ public class TagService {
 
     private TagsResponse tagsResponse;
     private TagDto tagDto;
+    @Autowired
     private TagRepository tagRepository;
     List<Tag> tagList;
     List<TagDto> finishTagList;
     private Tag popularTag;
     private int tagsCount;
     private double k;
-    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
     public TagsResponse getTag(String query) {
         tagList = new ArrayList<>();

@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Data
-@Component
 public class TagsResponse {
 
-    @Autowired
     @JsonProperty("tags")
     private List<TagDto> tags;
 }

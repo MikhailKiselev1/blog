@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 @Data
-@Component
 public class CalendarResponse {
 
     @JsonProperty("years")

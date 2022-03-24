@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Data
-@Component
-@Scope("prototype")
 public class PostDto {
 
     @JsonProperty("id")

@@ -10,13 +10,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Data
-@Component
 public class PostIdResponse extends PostDto {
 
     @JsonProperty("active")
     private boolean isActive;
 
-    @Autowired
     @JsonProperty("comments")
     private List<PostCommentsDto> comments;
 

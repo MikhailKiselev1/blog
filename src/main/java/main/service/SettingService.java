@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SettingService {
 
-    private ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ApplicationContext.xml");
 
     public SettingResponse getInitGlobalSetting() {
-        SettingResponse settingResponse = applicationContext.getBean("settingResponse", SettingResponse.class);
+        SettingResponse settingResponse = new SettingResponse();
         settingResponse.setMultiuserMode(false);
         settingResponse.setPostPremoderation(true);
         settingResponse.setStatisticsIsPublic(true);
