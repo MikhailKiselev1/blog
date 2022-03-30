@@ -17,7 +17,7 @@ public class CaptchaService {
 
     private CaptchaCodes captchaCodes;
     private CaptchaResponse captchaResponse;
-//    @Autowired
+    @Autowired
     private CaptchaRepository captchaRepository;
 
 

@@ -29,7 +29,7 @@ public class CalendarService {
         TreeSet<String> years = new TreeSet<>();
         TreeMap<String, Integer> postCount = new TreeMap<>();
         String finalYear = year;
-        postRepository.findAll().forEach(post -> {
+        postRepository.getActionCurrentNewPosts().forEach(post -> {
             years.add(post.getTime().format(yearFormat));
             if(post.getTime().format(yearFormat).equals(finalYear)) {
                 String key = post.getTime().format(day);

@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiGeneralController {
 
     private final InitResponse initResponse;
-    private final SettingService globalSettingService;
+    private final SettingResponse globalSettingResponse;
     private final CheckService checkService;
     private final PostService postService;
     private final TagService tagService;
     private final CalendarService calendarService;
 
     @Autowired
-    public ApiGeneralController(InitResponse initResponse, SettingService globalSettingService,
+    public ApiGeneralController(InitResponse initResponse, SettingResponse globalSettingResponse,
                                 CheckService checkService, PostService postsService, TagService tagService, CalendarService calendarService) {
         this.initResponse = initResponse;
-        this.globalSettingService = globalSettingService;
+        this.globalSettingResponse = globalSettingResponse;
         this.checkService = checkService;
         this.postService = postsService;
         this.tagService = tagService;
@@ -40,7 +40,7 @@ public class ApiGeneralController {
 
     @GetMapping("/settings")
     public SettingResponse setting() {
-        return globalSettingService.getInitGlobalSetting();
+        return globalSettingResponse;
     }
 
     @GetMapping("/auth/check")

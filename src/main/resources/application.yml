@@ -19,6 +19,7 @@ blog:
   email: pks52@mail.ru
   copyright: Киселев Михаил
   copyrightFrom: 2005
-  MULTIUSER_MODE: false
-  POST_PREMODERATION: true
-  STATISTICS_IS_PUBLIC: true
+  global_setting:
+    MULTIUSER_MODE: false
+    POST_PREMODERATION: true
+    STATISTICS_IS_PUBLIC: true

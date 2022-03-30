@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT p FROM posts p WHERE p.is_active = 1 AND p.moderation_status = 'accepted'")
+    @Query(
+            value = "SELECT * FROM posts p WHERE p.is_active = 1 AND p.moderation_status = 'accepted' AND p.time < NOW()",
+            nativeQuery = true)
     Collection<Post> getActionCurrentNewPosts();
 }
