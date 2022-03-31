@@ -20,6 +20,6 @@ blog:
   copyright: Киселев Михаил
   copyrightFrom: 2005
   global_setting:
-    MULTIUSER_MODE: false
+    MULTIUSER_MODE: true
     POST_PREMODERATION: true
     STATISTICS_IS_PUBLIC: true

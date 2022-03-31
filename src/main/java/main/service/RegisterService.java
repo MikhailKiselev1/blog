@@ -21,7 +21,7 @@ public class RegisterService {
 
     public RegisterResponse getRegister(String email, String password, String name,
                                         String captcha, String captchaSecret) {
-        
+
         RegisterResponse response = new RegisterResponse();
         List<User> users = userRepository.findAll();
         List<CaptchaCodes> captchaCodes = captchaRepository.findAll();
@@ -40,10 +40,13 @@ public class RegisterService {
             errors.put("password", "Пароль короче 6-ти символов");
         }
         captchaCodes.forEach(c -> {
-            if(c.getCode().equals(captcha)) {
-                if(!c.getSecretCode().equals(captchaSecret)) {
+            if(c.getSecretCode().equals(captchaSecret)) {
+                if(!c.getCode().equals(captcha)) {
                     errors.put("captcha", "Код с картинки введен неверно");
                 }
+            }
+            else {
+                errors.put("captcha", "Код с картинки введен неверно");
             }
         });
         if(errors.size() > 0) {

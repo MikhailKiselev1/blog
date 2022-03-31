@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/auth")
 public class ApiAuthController {
@@ -22,7 +25,7 @@ public class ApiAuthController {
     }
 
     @GetMapping("/captcha")
-    public CaptchaResponse captcha() {
+    public CaptchaResponse captcha() throws IOException {
         return captchaService.getCaptcha();
     }
 
