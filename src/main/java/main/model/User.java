@@ -38,7 +38,7 @@ public class User {
     @Column(nullable = true, columnDefinition = "VARCHAR(255)")
     private String code;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String photo;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)

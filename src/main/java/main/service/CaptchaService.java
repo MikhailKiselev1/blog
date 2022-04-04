@@ -60,7 +60,6 @@ public class CaptchaService {
         captchaRepository.save(captchaCodes);
         captchaResponse.setSecret(captchaCode);
         captchaResponse.setImage(image.toString());
-        System.out.println(image.toString());
         return captchaResponse;
     }
 }
