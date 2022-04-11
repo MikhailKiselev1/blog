@@ -1,10 +1,10 @@
-package main.api.response.dto;
+package main.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class RegisterDto {
+public class RegisterRequest {
 
     @JsonProperty("e_mail")
     private String email;

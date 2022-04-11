@@ -16,4 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             value = "SELECT * FROM posts p WHERE p.is_active = 1 AND p.moderation_status = 'accepted' AND p.time < NOW()",
             nativeQuery = true)
     Collection<Post> getActionCurrentNewPosts();
+
+    @Query(
+            value = "SELECT * FROM posts p WHERE p.moderation_status = 'new'",
+            nativeQuery = true)
+    Collection<Post> getNewPosts();
 }

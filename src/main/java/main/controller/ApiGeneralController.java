@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,46 +36,46 @@ public class ApiGeneralController {
         return initResponse;
     }
 
-    @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = "/**/{path:[^\\\\.]*}")
-    public String redirectToIndex() {
-        return "forward:/";
-    }
 
     @GetMapping("/settings")
     public SettingResponse setting() {
         return globalSettingResponse;
     }
 
+    @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/auth/check")
     public CheckResponse check() {
         return checkService.getCheck();
     }
 
+    @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/post")
-    public ResponseEntity<PostsResponse> post(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit, @PathVariable @Nullable String mode) {
+    public ResponseEntity<PostsResponse> post(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
+                                              @RequestParam(defaultValue = "recent", required = false) String mode) {
         return new ResponseEntity<>(postService.getPost(offset,limit,mode), HttpStatus.OK);
     }
 
+    // добавить @RequestParam(default value = 0) вместо Pathvariable
     @GetMapping("/post/search")
-    public ResponseEntity<PostsResponse> postSearch(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                    @PathVariable @Nullable String mode, @PathVariable String query) {
+    public ResponseEntity<PostsResponse> postSearch(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
+                                                    @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String query) {
         return new ResponseEntity<>(postService.getPostSearch(offset,limit,mode, query), HttpStatus.OK);
     }
 
     @GetMapping("/post/byDate")
-    public ResponseEntity<PostsResponse> postByDate(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                    @PathVariable @Nullable String mode, @PathVariable String date) {
+    public ResponseEntity<PostsResponse> postByDate(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
+                                                    @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String date) {
         return new ResponseEntity<>(postService.getPostByDate(offset,limit, mode, date), HttpStatus.OK);
     }
 
     @GetMapping("/post/byTag")
-    public ResponseEntity<PostsResponse> postByTag(@PathVariable @Nullable Integer offset, @PathVariable @Nullable Integer limit,
-                                   @PathVariable @Nullable String mode, @PathVariable String tag) {
+    public ResponseEntity<PostsResponse> postByTag(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
+                                                   @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String tag) {
         return new ResponseEntity<>(postService.getPostByTag(offset, limit, mode, tag), HttpStatus.OK);
     }
 
     @GetMapping("/post/{ID}")
-    public ResponseEntity<PostIdResponse> postById(@PathVariable Integer id) {
+    public ResponseEntity<PostIdResponse> postById(@RequestParam Integer id) {
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.NOT_FOUND);
     }
 
@@ -84,7 +85,7 @@ public class ApiGeneralController {
     }
 
     @GetMapping("/calendar")
-    public CalendarResponse calendar(@PathVariable String year) {
+    public CalendarResponse calendar(@RequestParam String year) {
         return calendarService.getCalendar(year);
     }
 

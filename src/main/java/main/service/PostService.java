@@ -163,12 +163,6 @@ public class PostService {
         List<Post> startList;
         List<Post> finishList;
 
-        if (limit == null) {
-            limit = 10;
-        }
-        if (offset == null) {
-            offset = 0;
-        }
 
         if (mode.equals("popular")) {
             startList = postList.stream().filter(p -> p.getPostComments().size() > 0)
