@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Service
 public class LoginService {
@@ -29,6 +30,7 @@ public class LoginService {
     }
 
     public LoginResponse getUser(LoginRequest loginRequest) {
+
         Authentication auth = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -37,10 +39,12 @@ public class LoginService {
         org.springframework.security.core.userdetails.User user =
                 (org.springframework.security.core.userdetails.User) auth.getPrincipal();
 
-
         main.model.User currentUser =
                 userRepository.findByEmail(user.getUsername())
                         .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+
+        currentUser.getEmail();
+        currentUser.getPassword();
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setResult(true);
@@ -51,10 +55,37 @@ public class LoginService {
         loginUserDto.setPhoto(currentUser.getPhoto());
         loginUserDto.setEmail(currentUser.getEmail());
         loginUserDto.setModeration(currentUser.getIsModerator() == 1);
-        loginUserDto.setModerationCount(currentUser.getIsModerator() == 1 ? postRepository.getNewPosts().size() : null);
+        if (currentUser.getIsModerator() == 1) {
+            loginUserDto.setModerationCount(postRepository.getNewPosts().size());
+        }
         loginUserDto.setSettings(currentUser.getIsModerator() == 1);
         loginResponse.setUser(loginUserDto);
 
+        return loginResponse;
+    }
+
+    public LoginResponse getCheck(String email) {
+        main.model.User currentUser =
+                userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+
+        currentUser.getEmail();
+        currentUser.getPassword();
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setResult(true);
+
+        LoginUserDto loginUserDto = new LoginUserDto();
+        loginUserDto.setId(currentUser.getId());
+        loginUserDto.setName(currentUser.getName());
+        loginUserDto.setPhoto(currentUser.getPhoto());
+        loginUserDto.setEmail(currentUser.getEmail());
+        loginUserDto.setModeration(currentUser.getIsModerator() == 1);
+        if (currentUser.getIsModerator() == 1) {
+            loginUserDto.setModerationCount(postRepository.getNewPosts().size());
+        }
+        loginUserDto.setSettings(currentUser.getIsModerator() == 1);
+        loginResponse.setUser(loginUserDto);
         return loginResponse;
     }
 }

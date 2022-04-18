@@ -62,6 +62,7 @@ public class RegisterService {
         user.setRegTime(LocalDateTime.now());
         user.setName(registerForm.getName());
         user.setEmail(registerForm.getEmail());
+
         user.setPassword(passwordEncoder.encode(registerForm.getPassword()));
         return user;
     }

@@ -15,17 +15,15 @@ public class ApiGeneralController {
 
     private final InitResponse initResponse;
     private final SettingResponse globalSettingResponse;
-    private final CheckService checkService;
     private final PostService postService;
     private final TagService tagService;
     private final CalendarService calendarService;
 
     @Autowired
     public ApiGeneralController(InitResponse initResponse, SettingResponse globalSettingResponse,
-                                CheckService checkService, PostService postsService, TagService tagService, CalendarService calendarService) {
+                                PostService postsService, TagService tagService, CalendarService calendarService) {
         this.initResponse = initResponse;
         this.globalSettingResponse = globalSettingResponse;
-        this.checkService = checkService;
         this.postService = postsService;
         this.tagService = tagService;
         this.calendarService = calendarService;
@@ -43,19 +41,12 @@ public class ApiGeneralController {
     }
 
     @PreAuthorize("hasAuthority('user:write')")
-    @GetMapping("/auth/check")
-    public CheckResponse check() {
-        return checkService.getCheck();
-    }
-
-    @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/post")
     public ResponseEntity<PostsResponse> post(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
                                               @RequestParam(defaultValue = "recent", required = false) String mode) {
         return new ResponseEntity<>(postService.getPost(offset,limit,mode), HttpStatus.OK);
     }
 
-    // добавить @RequestParam(default value = 0) вместо Pathvariable
     @GetMapping("/post/search")
     public ResponseEntity<PostsResponse> postSearch(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
                                                     @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String query) {
@@ -87,6 +78,13 @@ public class ApiGeneralController {
     @GetMapping("/calendar")
     public CalendarResponse calendar(@RequestParam String year) {
         return calendarService.getCalendar(year);
+    }
+
+    @PreAuthorize("hasAuthority('user:write')")
+    @GetMapping("/post/my")
+    public ResponseEntity<PostsResponse> myPost(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false)Integer limit,
+                                              @RequestParam(defaultValue = "inactive", required = false) String status) {
+        return ResponseEntity.ok(postService.getMyPosts(offset, limit, status));
     }
 
 }
