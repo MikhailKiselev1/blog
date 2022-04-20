@@ -1,10 +1,9 @@
 package main.service;
 
-import main.api.response.RegisterResponse;
+import main.api.response.ErrorsResponse;
 import main.api.request.RegisterRequest;
 import main.model.User;
 import main.repositories.CaptchaRepository;
-import main.repositories.PostRepository;
 import main.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -23,9 +22,9 @@ public class RegisterService {
     @Autowired
     private CaptchaRepository captchaRepository;
 
-    public RegisterResponse getRegister(RegisterRequest registerForm) {
+    public ErrorsResponse getRegister(RegisterRequest registerForm) {
 
-        RegisterResponse response = new RegisterResponse();
+        ErrorsResponse response = new ErrorsResponse();
         List<User> users = userRepository.findAll();
         HashMap<String, String> errors = new HashMap<>();
 

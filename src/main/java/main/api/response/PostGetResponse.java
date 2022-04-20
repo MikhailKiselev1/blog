@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Data
-public class PostsResponse {
+public class PostGetResponse {
 
     @JsonProperty("count")
     private int count;

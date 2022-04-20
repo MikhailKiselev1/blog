@@ -1,16 +1,18 @@
 package main.api.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.HashMap;
 
-@Data
-public class RegisterResponse {
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-    @JsonProperty("result")
+@Data
+public class ErrorsResponse {
+
     private boolean result;
 
-    @JsonProperty("errors")
+    @JsonInclude(NON_NULL)
     private HashMap<String, String> errors;
 }

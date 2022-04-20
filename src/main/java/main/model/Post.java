@@ -25,8 +25,9 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private ModerationStatus moderationStatus;
 
-    @Column(name = "moderator_id", columnDefinition = "INT")
-    private int moderatorId;
+    @ManyToOne
+    @JoinColumn(name = "moderator_id", nullable = true)
+    private User moderator;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

@@ -1,13 +1,11 @@
 package main.controller;
 
 import main.api.response.CaptchaResponse;
-import main.api.response.CheckResponse;
 import main.api.response.LoginResponse;
-import main.api.response.RegisterResponse;
+import main.api.response.ErrorsResponse;
 import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
 import main.service.CaptchaService;
-import main.service.CheckService;
 import main.service.LoginService;
 import main.service.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +28,14 @@ public class ApiAuthController {
     private final CaptchaService captchaService;
     private final RegisterService registerService;
     private final LoginService loginService;
-    private final CheckService checkService;
 
 
     @Autowired
     public ApiAuthController(CaptchaService captchaService, RegisterService registerService,
-                             LoginService loginService, CheckService checkService) {
+                             LoginService loginService) {
         this.captchaService = captchaService;
         this.registerService = registerService;
         this.loginService = loginService;
-        this.checkService = checkService;
     }
 
     @GetMapping("/captcha")
@@ -48,7 +44,7 @@ public class ApiAuthController {
     }
 
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest registerForm) {
+    public ErrorsResponse register(@RequestBody RegisterRequest registerForm) {
         return registerService.getRegister(registerForm);
     }
 
@@ -67,8 +63,6 @@ public class ApiAuthController {
         return "index";
     }
 
-
-    @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> check(Principal principal) {
         if(principal == null) {

@@ -1,10 +1,12 @@
 package main.service;
 
+import main.api.request.PostRequest;
+import main.api.response.ErrorsResponse;
 import main.api.response.PostIdResponse;
 import main.api.response.dto.PostCommentsDto;
 import main.api.response.dto.PostCommentsUserDto;
 import main.api.response.dto.PostDto;
-import main.api.response.PostsResponse;
+import main.api.response.PostGetResponse;
 import main.api.response.dto.PostUserDto;
 import main.model.Post;
 import main.model.Tag;
@@ -12,9 +14,13 @@ import main.model.User;
 import main.model.enums.ModerationStatus;
 import main.repositories.PostRepository;
 import main.repositories.TagRepository;
+import main.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,15 +29,22 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final TagRepository tagRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+
     @Autowired
-    private TagRepository tagRepository;
-    @Autowired
-    private PostRepository postRepository;
+    public PostService(TagRepository tagRepository, PostRepository postRepository,
+                       UserRepository userRepository) {
+        this.tagRepository = tagRepository;
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+    }
 
 
-    public PostsResponse getPost(Integer offset, Integer limit, String mode) {
+    public PostGetResponse getPost(Integer offset, Integer limit, String mode) {
 
-        PostsResponse postsResponse = new PostsResponse();
+        PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
         ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.getActionCurrentNewPosts();
         if (!actionCurrentNewPosts.isEmpty()) {
@@ -43,11 +56,11 @@ public class PostService {
         return postsResponse;
     }
 
-    public PostsResponse getPostSearch(Integer offset, Integer limit, String mode, String query) {
+    public PostGetResponse getPostSearch(Integer offset, Integer limit, String mode, String query) {
         if (query.matches("[\\s]") || query.equals("")) {
             return getPost(offset, limit, mode);
         } else {
-            PostsResponse postsResponse = new PostsResponse();
+            PostGetResponse postsResponse = new PostGetResponse();
             ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.findAll();
             List<PostDto> postDtoList = new ArrayList<>();
             getSortedCollection(mode, actionCurrentNewPosts, offset, limit).stream().forEach(p -> {
@@ -61,8 +74,8 @@ public class PostService {
         }
     }
 
-    public PostsResponse getPostByDate(Integer offset, Integer limit, String mode, String date) {
-        PostsResponse postsResponse = new PostsResponse();
+    public PostGetResponse getPostByDate(Integer offset, Integer limit, String mode, String date) {
+        PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
         List<Post> filterDataList = postRepository.findAll().stream()
                 .filter(post -> post.getTime().format(day).equals(date)).collect(Collectors.toList());
@@ -75,8 +88,8 @@ public class PostService {
         return postsResponse;
     }
 
-    public PostsResponse getPostByTag(Integer offset, Integer limit, String mode, String tag) {
-        PostsResponse postsResponse = new PostsResponse();
+    public PostGetResponse getPostByTag(Integer offset, Integer limit, String mode, String tag) {
+        PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
         List<Tag> tagList = tagRepository.findAll();
         Tag searchTag = tagList.stream().filter(t -> t.getName().equals(tag)).findFirst().get();
@@ -93,7 +106,7 @@ public class PostService {
 
     public PostIdResponse getPostById(int id) {
         PostIdResponse postIdResponse = new PostIdResponse();
-        Post post = postRepository.findById((long) id).get();
+        Post post = postRepository.findById(id).get();
         post.setViewCount(post.getViewCount() + 1);
         // добавляю просмотр
         postIdResponse.setId(post.getId());
@@ -132,17 +145,114 @@ public class PostService {
         return postIdResponse;
     }
 
-    public PostsResponse getMyPosts(Integer offset, Integer limit, String status) {
-        PostsResponse postsResponse = new PostsResponse();
+    public PostGetResponse getMyPosts(Integer offset, Integer limit, String status) {
+        PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.getActionCurrentNewPosts();
-        if (!actionCurrentNewPosts.isEmpty()) {
-            getMySortedCollection(status, actionCurrentNewPosts, offset, limit)
+        ArrayList<Post> allPosts = (ArrayList<Post>) postRepository.findAll();
+        if (!allPosts.isEmpty()) {
+            getMySortedCollection(status, allPosts, offset, limit)
                     .stream().forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
         postsResponse.setCount(postDtoList.size());
         return postsResponse;
+    }
+
+    public PostGetResponse getPostModeration(Integer offset, Integer limit, String status, Principal principal) {
+        PostGetResponse postsResponse = new PostGetResponse();
+        List<PostDto> postDtoList = new ArrayList<>();
+        ArrayList<Post> allPosts = (ArrayList<Post>) postRepository.findAll();
+        if (!allPosts.isEmpty()) {
+            getModeratorSortedCollection(status, allPosts, offset, limit, principal)
+                    .stream().forEach(p -> postDtoList.add(addPostDto(p)));
+        }
+        postsResponse.setPostsDto(postDtoList);
+        postsResponse.setCount(postDtoList.size());
+        return postsResponse;
+    }
+
+    public ErrorsResponse postPost(PostRequest postRequest, Principal principal) {
+        ErrorsResponse postAddResponse = new ErrorsResponse();
+        HashMap<String, String> errors = new HashMap<>();
+        if (postRequest.getTitle() == null) {
+            errors.put("title", "Заголовок не установлен");
+        }
+        else if (postRequest.getTitle().length() < 3) {
+            errors.put("title", "Заголовок слишком короткий");
+        }
+
+        if (postRequest.getText() == null) {
+            errors.put("text", "Текст не установлен");
+        }
+        else if (postRequest.getText().length() < 3) {
+            errors.put("text", "Текст слишком короткий");
+        }
+
+        if (!errors.isEmpty()) {
+            postAddResponse.setResult(false);
+            postAddResponse.setErrors(errors);
+        }
+        else {
+            postAddResponse.setResult(true);
+            Post post = new Post();
+            post.setIsActive(postRequest.getActive());
+            post.setModerationStatus(ModerationStatus.NEW);
+            post.setUserId(userRepository.findByEmail(principal.getName()).get());
+            //перевожу время из секунд в обьект класса LocalDateTime
+            LocalDateTime postTime = LocalDateTime.ofEpochSecond
+                    (postRequest.getTimestamp(), 0, ZoneOffset.UTC);
+            post.setTime(LocalDateTime.now(ZoneOffset.UTC).isAfter(postTime) ?
+                    LocalDateTime.now(ZoneOffset.UTC) : postTime);
+            post.setTitle(postRequest.getTitle());
+            post.setText(postRequest.getText());
+            post.setViewCount(0);
+            postRepository.saveAndFlush(post);
+        }
+
+            return postAddResponse;
+    }
+
+    public ErrorsResponse editPost(int id, PostRequest postRequest, Principal principal) {
+        ErrorsResponse postAddResponse = new ErrorsResponse();
+        HashMap<String, String> errors = new HashMap<>();
+        Post post = postRepository.findById(id).get();
+        if (postRequest.getTitle() == null) {
+            errors.put("title", "Заголовок не установлен");
+        }
+        else if (postRequest.getTitle().length() < 3) {
+            errors.put("title", "Заголовок слишком короткий");
+        }
+
+        if (postRequest.getText() == null) {
+            errors.put("text", "Текст не установлен");
+        }
+        else if (postRequest.getText().length() < 3) {
+            errors.put("text", "Текст слишком короткий");
+        }
+
+        if(!principal.getName().equals(post.getUserId().getEmail())) {
+            errors.put("user", "Автор поста другой пользователь");
+        }
+
+        if (!errors.isEmpty()) {
+            postAddResponse.setResult(false);
+            postAddResponse.setErrors(errors);
+        }
+        else {
+            postAddResponse.setResult(true);
+            post.setIsActive(postRequest.getActive());
+            //перевожу время из секунд в обьект класса LocalDateTime
+            LocalDateTime postTime = LocalDateTime.ofEpochSecond
+                    (postRequest.getTimestamp(), 0, ZoneOffset.UTC);
+            post.setTime(LocalDateTime.now(ZoneOffset.UTC).isAfter(postTime) ?
+                    LocalDateTime.now(ZoneOffset.UTC) : postTime);
+            post.setTitle(postRequest.getTitle());
+            post.setText(postRequest.getText());
+            post.setViewCount(0);
+            postRepository.saveAndFlush(post);
+        }
+
+        return postAddResponse;
     }
 
     private PostDto addPostDto(Post p) {
@@ -213,8 +323,41 @@ public class PostService {
                     .sorted(Comparator.comparing(p -> p.getTime()))
                     .sorted(Collections.reverseOrder()).collect(Collectors.toList());
         }
-        finishList = new ArrayList<>();
-        for (int i = offset; i <= limit; i++) {
+
+        return getFinishList(startList, offset, limit);
+    }
+
+    private List<Post> getModeratorSortedCollection(String status, List<Post> postList, Integer offset, Integer limit, Principal principal) {
+        List<Post> startList;
+        List<Post> finishList;
+
+        if (status.equals("new")) {
+            startList = postList.stream().filter(p -> p.getModerationStatus() == ModerationStatus.NEW)
+                    .sorted(Comparator.comparing(p -> p.getTime()))
+                    .sorted(Collections.reverseOrder())
+                    .collect(Collectors.toList());
+        } else if (status.equals("declined")) {
+            startList = postList.stream().filter(p -> p.getModerator().getEmail().equals(principal.getName())
+                            && p.getModerationStatus() == ModerationStatus.DECLINED)
+                    .sorted(Comparator.comparing(p -> p.getTime()))
+                    .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+        } else {
+            startList = postList.stream().filter(p -> p.getModerator().getEmail().equals(principal.getName())
+                            && p.getModerationStatus() == ModerationStatus.ACCEPTED)
+                    .sorted(Comparator.comparing(p -> p.getTime()))
+                    .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+        }
+
+        return getFinishList(startList, offset, limit);
+    }
+
+    //Данный метод выдает посты, согласно настройкам
+    private List<Post> getFinishList(List<Post> startList, int offset, int limit) {
+        if (startList.size() < limit) {
+            limit = startList.size();
+        }
+        ArrayList<Post> finishList = new ArrayList<>();
+        for (int i = offset; i < limit; i++) {
             finishList.add(startList.get(i));
         }
         return finishList;
