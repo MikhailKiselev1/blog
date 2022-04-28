@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 public class PostGetResponse {
 
-    @JsonProperty("count")
     private int count;
 
     @JsonProperty("posts")

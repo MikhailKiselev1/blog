@@ -3,6 +3,7 @@ package main.service;
 import main.api.response.ErrorsResponse;
 import main.api.request.RegisterRequest;
 import main.model.User;
+import main.other.RegularExpressions;
 import main.repositories.CaptchaRepository;
 import main.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,14 @@ import java.util.List;
 @Service
 public class RegisterService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CaptchaRepository captchaRepository;
+    private final UserRepository userRepository;
+    private final CaptchaRepository captchaRepository;
+
+
+    public RegisterService(UserRepository userRepository, CaptchaRepository captchaRepository) {
+        this.userRepository = userRepository;
+        this.captchaRepository = captchaRepository;
+    }
 
     public ErrorsResponse getRegister(RegisterRequest registerForm) {
 
@@ -33,7 +38,7 @@ public class RegisterService {
                 errors.put("email", "Этот e-mail уже зарегистрирован");
             }
         });
-        if(!registerForm.getName().matches("[А-Я][а-я]+")) {
+        if(!registerForm.getName().matches(RegularExpressions.getRegularName())) {
             errors.put("name", "Имя указано неверно");
         }
         if (registerForm.getPassword().length() < 5) {
@@ -62,7 +67,8 @@ public class RegisterService {
         user.setName(registerForm.getName());
         user.setEmail(registerForm.getEmail());
 
-        user.setPassword(passwordEncoder.encode(registerForm.getPassword()));
+        user.setPassword(passwordEncoder.encode(registerForm.getPassword())
+                .replaceFirst("\\{bcrypt}", ""));
         return user;
     }
 

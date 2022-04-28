@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "posts")
-public class Post {
+public class Post implements Comparable<Post>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -59,4 +59,8 @@ public class Post {
     @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL)
     private List<PostComments> postComments;
 
+    @Override
+    public int compareTo(Post o) {
+        return getTime().compareTo(o.getTime());
+    }
 }

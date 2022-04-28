@@ -31,20 +31,15 @@ public class LoginService {
 
     public LoginResponse getUser(LoginRequest loginRequest) {
 
+        User currentUser = userRepository.findByEmail(loginRequest.getEmail()).
+                orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+
+        String userId = String.valueOf(currentUser.getId());
+
         Authentication auth = authenticationManager
                 .authenticate(
-                        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                        new UsernamePasswordAuthenticationToken(userId, loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(auth);
-
-        org.springframework.security.core.userdetails.User user =
-                (org.springframework.security.core.userdetails.User) auth.getPrincipal();
-
-        main.model.User currentUser =
-                userRepository.findByEmail(user.getUsername())
-                        .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
-
-        currentUser.getEmail();
-        currentUser.getPassword();
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setResult(true);
@@ -64,13 +59,11 @@ public class LoginService {
         return loginResponse;
     }
 
-    public LoginResponse getCheck(String email) {
+    public LoginResponse getCheck(String id) {
         main.model.User currentUser =
-                userRepository.findByEmail(email)
+                userRepository.findById(Integer.parseInt(id))
                         .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
-        currentUser.getEmail();
-        currentUser.getPassword();
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setResult(true);

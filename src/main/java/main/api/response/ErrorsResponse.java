@@ -11,8 +11,13 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Data
 public class ErrorsResponse {
 
-    private boolean result;
+    @JsonInclude(NON_NULL)
+    private Boolean result;
 
     @JsonInclude(NON_NULL)
     private HashMap<String, String> errors;
+
+    //ответ для успешной загрузки изображений
+    @JsonInclude(NON_NULL)
+    private String image;
 }

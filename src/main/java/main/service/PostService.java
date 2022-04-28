@@ -197,7 +197,7 @@ public class PostService {
             Post post = new Post();
             post.setIsActive(postRequest.getActive());
             post.setModerationStatus(ModerationStatus.NEW);
-            post.setUserId(userRepository.findByEmail(principal.getName()).get());
+            post.setUserId(userRepository.findById(Integer.parseInt(principal.getName())).get());
             //перевожу время из секунд в обьект класса LocalDateTime
             LocalDateTime postTime = LocalDateTime.ofEpochSecond
                     (postRequest.getTimestamp(), 0, ZoneOffset.UTC);
@@ -302,7 +302,6 @@ public class PostService {
 
     private List<Post> getMySortedCollection(String status, List<Post> postList, Integer offset, Integer limit) {
         List<Post> startList;
-        List<Post> finishList;
 
 
         if (status.equals("inactive")) {
@@ -312,7 +311,7 @@ public class PostService {
                     .collect(Collectors.toList());
         } else if (status.equals("pending")) {
             startList = postList.stream().filter(p -> p.getIsActive() == 1 && p.getModerationStatus() == ModerationStatus.NEW)
-                    .sorted(Comparator.comparing(p -> p.getTime()))
+                    .sorted(Comparator.comparing(Post::getTime))
                     .sorted(Collections.reverseOrder()).collect(Collectors.toList());
         } else if (status.equals("declined")) {
             startList = postList.stream().filter(p -> p.getIsActive() == 1 && p.getModerationStatus() == ModerationStatus.DECLINED)
