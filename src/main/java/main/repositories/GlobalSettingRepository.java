@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GlobalSettingCrudRepository extends JpaRepository<GlobalSetting, Long> {
+public interface GlobalSettingRepository extends JpaRepository<GlobalSetting, Integer> {
 }

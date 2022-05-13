@@ -1,16 +1,16 @@
 package main.controller;
 
+import main.api.request.EditPasswordRequest;
+import main.api.request.RestoreRequest;
 import main.api.response.CaptchaResponse;
 import main.api.response.LoginResponse;
 import main.api.response.ErrorsResponse;
 import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
-import main.service.CaptchaService;
-import main.service.LoginService;
-import main.service.RegisterService;
+import main.api.response.RestoreResponse;
+import main.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -28,14 +28,18 @@ public class ApiAuthController {
     private final CaptchaService captchaService;
     private final RegisterService registerService;
     private final LoginService loginService;
+    private final RestoreService restoreService;
+    private final PasswordService passwordService;
 
 
     @Autowired
     public ApiAuthController(CaptchaService captchaService, RegisterService registerService,
-                             LoginService loginService) {
+                             LoginService loginService, RestoreService restoreService, PasswordService passwordService) {
         this.captchaService = captchaService;
         this.registerService = registerService;
         this.loginService = loginService;
+        this.restoreService = restoreService;
+        this.passwordService = passwordService;
     }
 
     @GetMapping("/captcha")
@@ -54,10 +58,10 @@ public class ApiAuthController {
     }
 
 
-    @RequestMapping(value="/logout", method=RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "index";
@@ -65,10 +69,20 @@ public class ApiAuthController {
 
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> check(Principal principal) {
-        if(principal == null) {
+        if (principal == null) {
             return ResponseEntity.ok(new LoginResponse());
         }
         return ResponseEntity.ok(loginService.getCheck(principal.getName()));
+    }
+
+    @PostMapping("/restore")
+    public RestoreResponse restore(@RequestBody RestoreRequest request) {
+        return restoreService.getRestore(request);
+    }
+
+    @PostMapping("/password")
+    public ErrorsResponse editPassword(@RequestBody EditPasswordRequest request) {
+        return passwordService.getPassword(request);
     }
 
 

@@ -34,24 +34,23 @@ public class RegisterService {
         HashMap<String, String> errors = new HashMap<>();
 
         users.forEach(user -> {
-            if(user.getEmail().equals(registerForm.getEmail())) {
+            if (user.getEmail().equals(registerForm.getEmail())) {
                 errors.put("email", "Этот e-mail уже зарегистрирован");
             }
         });
-        if(!registerForm.getName().matches(RegularExpressions.getRegularName())) {
+        if (!registerForm.getName().matches(RegularExpressions.getRegularName())) {
             errors.put("name", "Имя указано неверно");
         }
         if (registerForm.getPassword().length() < 5) {
             errors.put("password", "Пароль короче 6-ти символов");
         }
-        if(!registerForm.getCaptcha().equals(registerForm.getCaptchaSecret())) {
+        if (!registerForm.getCaptcha().equals(registerForm.getCaptchaSecret())) {
             errors.put("captcha", "Код с картинки введен неверно");
         }
-        if(errors.size() > 0) {
+        if (errors.size() > 0) {
             response.setResult(false);
             response.setErrors(errors);
-        }
-        else {
+        } else {
             User user = saveUser(registerForm);
             userRepository.save(user);
             response.setResult(true);

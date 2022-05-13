@@ -3,7 +3,6 @@ package main.service;
 import main.api.response.CalendarResponse;
 import main.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,11 +13,15 @@ import java.util.TreeSet;
 @Service
 public class CalendarService {
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
     private CalendarResponse calendarResponse;
     private final DateTimeFormatter yearFormat = DateTimeFormatter.ofPattern("yyyy");
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    @Autowired
+    public CalendarService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
 
     public CalendarResponse getCalendar(String year) {
@@ -31,7 +34,7 @@ public class CalendarService {
         String finalYear = year;
         postRepository.getActionCurrentNewPosts().forEach(post -> {
             years.add(post.getTime().format(yearFormat));
-            if(post.getTime().format(yearFormat).equals(finalYear)) {
+            if (post.getTime().format(yearFormat).equals(finalYear)) {
                 String key = post.getTime().format(day);
                 if (postCount.containsKey(key)) {
                     postCount.put(key, postCount.get(key) + 1);

@@ -1,12 +1,11 @@
 package main.service;
 
-import main.api.request.profileRequest.MyProfileRequest;
+import main.api.request.MyProfileRequest;
 import main.api.response.ErrorsResponse;
 import main.model.User;
 import main.other.RegularExpressions;
 import main.repositories.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,13 +16,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.Random;
 
 @Service
 public class ProfileService {
@@ -68,8 +62,7 @@ public class ProfileService {
         if (!errors.isEmpty()) {
             errorsResponse.setResult(false);
             errorsResponse.setErrors(errors);
-        }
-        else {
+        } else {
             errorsResponse.setResult(true);
             user.setName(request.getName());
             user.setEmail(request.getEmail());
@@ -91,7 +84,7 @@ public class ProfileService {
 //            errors.put("image", "Неверный формат изображения");
 //            errorsResponse.setErrors(errors);
 //        }
-        if ((double) image.getSize()/(1024*1024) > maxSizeImage) {
+        if ((double) image.getSize() / (1024 * 1024) > maxSizeImage) {
             errors.put("image", "Размер файла превышает допустимый размер");
         }
 
@@ -99,8 +92,7 @@ public class ProfileService {
         if (!errors.isEmpty()) {
             errorsResponse.setErrors(errors);
             errorsResponse.setResult(false);
-        }
-        else {
+        } else {
             String fileName = image.getOriginalFilename();
             String location = getImageGenerationPath();
             File pathFile = new File(location);
@@ -130,7 +122,7 @@ public class ProfileService {
 
     private HashMap<String, String> checkEmail(String email, String userEmail,
                                                HashMap<String, String> errors) {
-        if(userRepository.findByEmail(email).isPresent()
+        if (userRepository.findByEmail(email).isPresent()
                 && !email.equals(userEmail)) {
             errors.put("email", "Этот e-mail уже зарегистрирован");
         }
@@ -141,14 +133,14 @@ public class ProfileService {
     }
 
     private HashMap<String, String> checkName(String name, HashMap<String, String> errors) {
-        if(!name.matches(RegularExpressions.getRegularName()) || name.length() < 3) {
+        if (!name.matches(RegularExpressions.getRegularName()) || name.length() < 3) {
             errors.put("name", "Имя указано неверно");
         }
         return errors;
     }
 
     private HashMap<String, String> checkPassword(String password, HashMap<String, String> errors) {
-        if(password.length() < 6) {
+        if (password.length() < 6) {
             errors.put("password", "Пароль короче 6-ти символов");
         }
         return errors;

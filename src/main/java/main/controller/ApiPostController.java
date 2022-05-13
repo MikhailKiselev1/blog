@@ -1,12 +1,13 @@
 package main.controller;
 
+import main.api.request.LikeRequest;
 import main.api.request.PostRequest;
 import main.api.response.ErrorsResponse;
 import main.api.response.PostIdResponse;
 import main.api.response.PostGetResponse;
+import main.service.LikeService;
 import main.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,13 @@ import java.security.Principal;
 public class ApiPostController {
 
     private final PostService postService;
+    private final LikeService likeService;
 
     @Autowired
-    public ApiPostController(PostService postsService) {
+    public ApiPostController(PostService postsService, LikeService likeService) {
         this.postService = postsService;
-           }
+        this.likeService = likeService;
+    }
 
     @GetMapping
     public ResponseEntity<PostGetResponse> post(@RequestParam(defaultValue = "0", required = false) Integer offset,
@@ -50,9 +53,8 @@ public class ApiPostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostIdResponse> postById(@PathVariable long id) {
-        System.out.println(id);
-        return ResponseEntity.ok(postService.getPostById((int) id));
+    public PostIdResponse postById(@PathVariable long id, Principal principal) {
+        return postService.getPostById((int) id, principal);
     }
 
     @PreAuthorize("hasAuthority('user:write')")
@@ -80,8 +82,21 @@ public class ApiPostController {
 
     @PreAuthorize("hasAuthority('user:write')")
     @PutMapping("/{id}")
-    public ResponseEntity<ErrorsResponse> editPost (@PathVariable int id,
-                                                     @RequestBody PostRequest postRequest, Principal principal) {
-        return ResponseEntity.ok(postService.editPost(id, postRequest, principal));
+    public ErrorsResponse editPost(@PathVariable int id,
+                                                   @RequestBody PostRequest postRequest, Principal principal) {
+        return postService.editPost(id, postRequest, principal);
     }
+
+    @PreAuthorize("hasAuthority('user:write')")
+    @PostMapping("/like")
+    public ErrorsResponse likePost(@RequestBody LikeRequest request, Principal principal) {
+        return likeService.setLike(request, principal, 1);
+    }
+
+    @PreAuthorize("hasAuthority('user:write')")
+    @PostMapping("/dislike")
+    public ErrorsResponse dislikePost(@RequestBody LikeRequest request, Principal principal) {
+        return likeService.setLike(request, principal, -1);
+    }
+
 }

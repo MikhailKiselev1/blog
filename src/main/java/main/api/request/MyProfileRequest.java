@@ -1,4 +1,4 @@
-package main.api.request.profileRequest;
+package main.api.request;
 
 import lombok.Data;
 

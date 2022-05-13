@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -17,7 +18,7 @@ public class PostComments {
     private int id;
 
     @Column(name = "parent_id", columnDefinition = "INT")
-    private int parentId;
+    private Integer parentId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -28,7 +29,7 @@ public class PostComments {
     private Post postId;
 
     @Column(nullable = false, columnDefinition = "DATETIME")
-    private Date time;
+    private LocalDateTime time;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
