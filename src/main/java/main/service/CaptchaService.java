@@ -23,8 +23,6 @@ import java.util.List;
 public class CaptchaService {
 
 
-    private CaptchaCodes captchaCodes;
-    private CaptchaResponse captchaResponse;
     @Autowired
     private CaptchaRepository captchaRepository;
 
@@ -37,8 +35,8 @@ public class CaptchaService {
             }
         });
         StringBuilder image = new StringBuilder("data:image/png;base64, ");
-        captchaResponse = new CaptchaResponse();
-        captchaCodes = new CaptchaCodes();
+        CaptchaResponse captchaResponse = new CaptchaResponse();
+        CaptchaCodes captchaCodes = new CaptchaCodes();
         LocalDateTime time = LocalDateTime.now();
         Cage cage = new GCage();
         String captchaCode = cage.getTokenGenerator().next();
