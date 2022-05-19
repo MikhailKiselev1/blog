@@ -1,18 +1,17 @@
 spring:
   datasource:
-    url: jdbc:${CLEARDB_DATABASE_URL:mysql://localhost:3306/blog?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-    username: root
-    password: testtest
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfo23_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: mkinfo23_db
+    password: h37zwoR*
+
+
   jpa:
     hibernate:
       show-sql: true
       ddl-auto: validate
   server:
-    port: ${PORT:8080}
+    port: 8080
 
-java:
-  runtime:
-    version: 11
 #  http:
 #    multipart:
 #      max-file-size: 5MB
