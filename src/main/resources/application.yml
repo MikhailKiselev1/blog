@@ -1,6 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfo23_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: ${USERNAME}
+    password: ${PASSWORD}
 
 
   jpa:
