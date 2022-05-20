@@ -19,6 +19,11 @@ public class Tag {
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
 
-    @ManyToMany(mappedBy = "tagsList")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "tag2post",
+            joinColumns = {@JoinColumn(name = "tag_id")},
+            inverseJoinColumns = {@JoinColumn(name = "post_id")}
+    )
     private List<Post> postsWithTags;
 }

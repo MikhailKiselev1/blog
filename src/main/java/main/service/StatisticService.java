@@ -29,14 +29,17 @@ public class StatisticService {
 
         StatisticResponse statisticResponse = new StatisticResponse();
         List<PostVotes> myPostList = (List<PostVotes>) postVotesRepository.findAllByUserId(Integer.parseInt(principal.getName()));
+        List<Post> posts = (List<Post>) postRepository.findAllByUserId(Integer.parseInt(principal.getName()));
 
-        statisticResponse.setPostsCount(postRepository.findAllByUserId(Integer.parseInt(principal.getName())).size());
-        statisticResponse.setLikesCount((int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
-        statisticResponse.setDislikesCount((int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
+        statisticResponse.setPostsCount(posts == null ? 0 : posts.size());
+        statisticResponse.setLikesCount(myPostList == null ? 0
+                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
+        statisticResponse.setDislikesCount(myPostList == null ? 0
+                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
         statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
                 .orElseThrow().getTime().getNano());
         statisticResponse.setViewsCount(postRepository.findAllByUserId(Integer.parseInt(principal.getName()))
-                .stream().map(Post::getViewCount).reduce(Integer::sum).orElseThrow());
+                .stream().map(Post::getViewCount).reduce(Integer::sum).orElse(0));
 
         return statisticResponse;
     }
@@ -45,10 +48,13 @@ public class StatisticService {
 
         StatisticResponse statisticResponse = new StatisticResponse();
         List<PostVotes> myPostList = postVotesRepository.findAll();
+        List<Post> posts = postRepository.findAll();
 
-        statisticResponse.setPostsCount(postRepository.findAll().size());
-        statisticResponse.setLikesCount((int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
-        statisticResponse.setDislikesCount((int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
+        statisticResponse.setPostsCount(posts == null ? 0 : posts.size());
+        statisticResponse.setLikesCount(myPostList == null ? 0
+                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
+        statisticResponse.setDislikesCount(myPostList == null ? 0
+                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
         statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
                 .orElseThrow().getTime().getNano());
         statisticResponse.setViewsCount(postRepository.findAll()

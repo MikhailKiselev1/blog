@@ -210,6 +210,7 @@ public class PostService {
             post.setTitle(postRequest.getTitle());
             post.setText(postRequest.getText());
             post.setViewCount(0);
+            setTags(postRequest.getTags(), post);
             postRepository.saveAndFlush(post);
         }
 
@@ -250,6 +251,8 @@ public class PostService {
             post.setTitle(postRequest.getTitle());
             post.setText(postRequest.getText());
             post.setViewCount(0);
+            setTags(postRequest.getTags(), post);
+            postRequest.getTags().forEach(System.out::println);
             postRepository.saveAndFlush(post);
         }
 
@@ -273,6 +276,26 @@ public class PostService {
         postDto.setViewCount(p.getViewCount());
         return postDto;
     }
+
+    private void setTags(List<String> listTags, Post post) {
+        listTags.forEach(tags -> {
+            Tag repositoryTag = tagRepository.findByName((tags)).orElse(null);
+            if (repositoryTag == null) {
+                repositoryTag = new Tag();
+                repositoryTag.setName(tags);
+                List<Post> posts = new ArrayList<>();
+                posts.add(post);
+                repositoryTag.setPostsWithTags(posts);
+                tagRepository.save(repositoryTag);
+            } else {
+                List<Post> posts = repositoryTag.getPostsWithTags();
+                posts.add(post);
+                repositoryTag.setPostsWithTags(posts);
+                tagRepository.save(repositoryTag);
+            }
+        });
+    }
+
 
     private List<Post> getSortedCollection(String mode, List<Post> postList, Integer offset, Integer limit) {
         List<Post> startList;

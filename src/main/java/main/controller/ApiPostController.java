@@ -77,6 +77,7 @@ public class ApiPostController {
     @PreAuthorize("hasAuthority('user:write')")
     @PostMapping
     public ResponseEntity<ErrorsResponse> addPost(@RequestBody PostRequest postRequest, Principal principal) {
+        postRequest.getTags().forEach(System.out::println);
         return ResponseEntity.ok(postService.postPost(postRequest, principal));
     }
 

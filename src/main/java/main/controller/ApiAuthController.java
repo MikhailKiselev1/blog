@@ -64,7 +64,7 @@ public class ApiAuthController {
         if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
-        return "index";
+        return "forward:/";
     }
 
     @GetMapping("/check")
