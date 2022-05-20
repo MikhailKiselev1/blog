@@ -11,7 +11,7 @@ public class InitResponse {
     @Value("${blog.title}")
     private String title;
 
-    @Value("{blog.subtitle}")
+    @Value("${blog.subtitle}")
     private String subtitle;
 
     @Value("${blog.phone}")
