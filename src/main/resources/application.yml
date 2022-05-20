@@ -10,7 +10,7 @@ spring:
       show-sql: true
       ddl-auto: validate
   server:
-    port: 8080
+    port: ${PORT:8080}
 
 #  http:
 #    multipart:
@@ -22,7 +22,7 @@ spring:
 
 
 blog:
-  title: DevPub
+  title: Blog Engine
   subtitle: Рассказы Разработчиков
   phone: +7 930 070-73-79
   email: pks52@mail.ru
