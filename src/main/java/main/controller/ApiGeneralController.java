@@ -86,7 +86,7 @@ public class ApiGeneralController {
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ErrorsResponse imagePost(@RequestParam MultipartFile image) throws IOException {
         System.out.println("postImage controller");
-        return profileService.postImage(image);
+        return ImageDownloadService.postImage(image);
     }
 
     @PreAuthorize("hasAuthority('user:write')")

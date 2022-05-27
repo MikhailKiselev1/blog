@@ -10,14 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Service
 public class ProfileService {
@@ -73,52 +78,6 @@ public class ProfileService {
     }
 
 
-    public ErrorsResponse postImage(MultipartFile image) throws IOException {
-
-        int maxSizeImage = 5;
-        // максимальный размер в Мбайтах
-        ErrorsResponse errorsResponse = new ErrorsResponse();
-        HashMap<String, String> errors = new HashMap<>();
-
-//        if (!image.getOriginalFilename().matches(".+\\.png") || !image.getOriginalFilename().matches(".+\\.jpg")) {
-//            errors.put("image", "Неверный формат изображения");
-//            errorsResponse.setErrors(errors);
-//        }
-        if ((double) image.getSize() / (1024 * 1024) > maxSizeImage) {
-            errors.put("image", "Размер файла превышает допустимый размер");
-        }
-
-
-        if (!errors.isEmpty()) {
-            errorsResponse.setErrors(errors);
-            errorsResponse.setResult(false);
-        } else {
-            String fileName = image.getOriginalFilename();
-            String location = getImageGenerationPath();
-            File pathFile = new File(location);
-            if (!pathFile.exists()) {
-                pathFile.mkdirs();
-            }
-            BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
-
-
-            pathFile = new File(location + fileName);
-            ImageIO.write(bufferedImage, "jpg", pathFile);
-
-
-            System.out.println(location + fileName);
-            System.out.println(pathFile.getPath());
-            errorsResponse.setImage(location + fileName);
-        }
-        return errorsResponse;
-    }
-
-    private static String getImageGenerationPath() {
-        return new StringBuilder("src/main/upload/").append(RandomStringUtils.randomAlphabetic(4))
-                .append("/").append(RandomStringUtils.randomAlphabetic(4))
-                .append("/").append(RandomStringUtils.randomAlphabetic(4))
-                .append("/").toString();
-    }
 
     private HashMap<String, String> checkEmail(String email, String userEmail,
                                                HashMap<String, String> errors) {
