@@ -28,8 +28,8 @@ public class StatisticService {
     public StatisticResponse getStatisticMy(Principal principal) {
 
         StatisticResponse statisticResponse = new StatisticResponse();
-        List<PostVotes> myPostList = (List<PostVotes>) postVotesRepository.findAllByUserId(Integer.parseInt(principal.getName()));
-        List<Post> posts = (List<Post>) postRepository.findAllByUserId(Integer.parseInt(principal.getName()));
+        List<PostVotes> myPostList = postVotesRepository.findByUserId(Integer.parseInt(principal.getName()));
+        List<Post> posts = (List<Post>) postRepository.findByUserId(Integer.parseInt(principal.getName()));
 
         statisticResponse.setPostsCount(posts == null ? 0 : posts.size());
         statisticResponse.setLikesCount(myPostList == null ? 0
@@ -38,7 +38,7 @@ public class StatisticService {
                 : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
         statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
                 .orElseThrow().getTime().getNano());
-        statisticResponse.setViewsCount(postRepository.findAllByUserId(Integer.parseInt(principal.getName()))
+        statisticResponse.setViewsCount(posts
                 .stream().map(Post::getViewCount).reduce(Integer::sum).orElse(0));
 
         return statisticResponse;

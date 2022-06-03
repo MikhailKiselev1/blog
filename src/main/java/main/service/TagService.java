@@ -31,9 +31,6 @@ public class TagService {
         if (tagList.size() > 0) {
             Tag popularTag = tagList.stream().max(Comparator.comparing(t -> t.getPostsWithTags().size())).get();
             int tagsCount = tagList.size();
-            System.out.println(popularTag.getName());
-            System.out.println(popularTag.getPostsWithTags().size());
-            System.out.println(tagsCount);
             double k = 1.0 / (popularTag.getPostsWithTags().size() / tagsCount);
             if (query == null) {
                 tagList.forEach(t -> {

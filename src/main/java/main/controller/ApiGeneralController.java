@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -82,11 +84,18 @@ public class ApiGeneralController {
         return profileService.profileEdit(request, principal);
     }
 
+//    @PreAuthorize("hasAuthority('user:write')")
+//    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ErrorsResponse imagePost(@RequestParam MultipartFile image) throws IOException {
+//        System.out.println("postImage controller");
+//        return ImageDownloadService.postImage(image);
+//    }
+
     @PreAuthorize("hasAuthority('user:write')")
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ErrorsResponse imagePost(@RequestParam MultipartFile image) throws IOException {
+    public ErrorsResponse imagePost(@RequestParam MultipartFile image, HttpServletRequest request, Principal principal) throws IOException {
         System.out.println("postImage controller");
-        return ImageDownloadService.postImage(image);
+        return ImageDownloadService.addImage(image, request, principal);
     }
 
     @PreAuthorize("hasAuthority('user:write')")

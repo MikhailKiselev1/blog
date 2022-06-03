@@ -8,12 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PostVotesRepository extends JpaRepository<PostVotes, Integer> {
-    @Query(
-            value = "SELECT * FROM Post_votes p WHERE p.user_id = ?1",
-            nativeQuery = true)
-    Collection<PostVotes> findAllByUserId(int userId);
+
+    List<PostVotes> findByUserId(int userId);
 }
