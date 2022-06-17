@@ -28,28 +28,28 @@ public class ApiPostController {
     }
 
     @GetMapping
-    public ResponseEntity<PostGetResponse> post(@RequestParam(defaultValue = "0", required = false) Integer offset,
+    public PostGetResponse post(@RequestParam(defaultValue = "0", required = false) Integer offset,
                                                 @RequestParam(defaultValue = "10", required = false) Integer limit,
                                                 @RequestParam(defaultValue = "recent", required = false) String mode) {
-        return ResponseEntity.ok(postService.getPost(offset, limit, mode));
+        return postService.getPost(offset, limit, mode);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<PostGetResponse> postSearch(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
+    public PostGetResponse postSearch(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
                                                       @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String query) {
-        return ResponseEntity.ok(postService.getPostSearch(offset, limit, mode, query));
+        return postService.getPostSearch(offset, limit, query);
     }
 
     @GetMapping("/byDate")
-    public ResponseEntity<PostGetResponse> postByDate(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
+    public PostGetResponse postByDate(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
                                                       @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String date) {
-        return ResponseEntity.ok(postService.getPostByDate(offset, limit, mode, date));
+        return postService.getPostByDate(offset, limit, mode, date);
     }
 
     @GetMapping("/byTag")
-    public ResponseEntity<PostGetResponse> postByTag(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
+    public PostGetResponse postByTag(@RequestParam(defaultValue = "0", required = false) Integer offset, @RequestParam(defaultValue = "10", required = false) Integer limit,
                                                      @RequestParam(defaultValue = "recent", required = false) String mode, @RequestParam String tag) {
-        return ResponseEntity.ok(postService.getPostByTag(offset, limit, mode, tag));
+        return postService.getPostByTag(offset, limit, mode, tag);
     }
 
     @GetMapping("/{id}")
@@ -59,26 +59,27 @@ public class ApiPostController {
 
     @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/my")
-    public ResponseEntity<PostGetResponse> postMy(@RequestParam(defaultValue = "0", required = false) Integer offset,
+    public PostGetResponse postMy(@RequestParam(defaultValue = "0", required = false) Integer offset,
                                                   @RequestParam(defaultValue = "10", required = false) Integer limit,
-                                                  @RequestParam(defaultValue = "inactive", required = false) String status) {
-        return ResponseEntity.ok(postService.getMyPosts(offset, limit, status));
+                                                  @RequestParam(defaultValue = "inactive", required = false) String status,
+                                                    Principal principal) {
+        return postService.getMyPosts(offset, limit, status, principal);
     }
 
     @PreAuthorize("hasAuthority('user:moderate')")
     @GetMapping("/moderation")
-    public ResponseEntity<PostGetResponse> postModeration(@RequestParam(defaultValue = "0", required = false) Integer offset,
+    public PostGetResponse postModeration(@RequestParam(defaultValue = "0", required = false) Integer offset,
                                                           @RequestParam(defaultValue = "10", required = false) Integer limit,
                                                           @RequestParam(defaultValue = "new", required = false) String status,
                                                           Principal principal) {
-        return ResponseEntity.ok(postService.getPostModeration(offset, limit, status, principal));
+        return postService.getPostModeration(offset, limit, status, principal);
     }
 
     @PreAuthorize("hasAuthority('user:write')")
     @PostMapping
-    public ResponseEntity<ErrorsResponse> addPost(@RequestBody PostRequest postRequest, Principal principal) {
+    public ErrorsResponse addPost(@RequestBody PostRequest postRequest, Principal principal) {
         postRequest.getTags().forEach(System.out::println);
-        return ResponseEntity.ok(postService.postPost(postRequest, principal));
+        return postService.setPost(postRequest, principal);
     }
 
     @PreAuthorize("hasAuthority('user:write')")

@@ -11,6 +11,5 @@ import java.util.List;
 @Data
 public class TagsResponse {
 
-    @JsonProperty("tags")
     private List<TagDto> tags;
 }

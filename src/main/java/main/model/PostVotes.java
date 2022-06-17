@@ -31,4 +31,5 @@ public class PostVotes {
     @Column(nullable = false, columnDefinition = "TINYINT")
     private int value;
 
+
 }

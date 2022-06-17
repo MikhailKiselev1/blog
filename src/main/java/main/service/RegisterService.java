@@ -44,7 +44,9 @@ public class RegisterService {
         if (registerForm.getPassword().length() < 5) {
             errors.put("password", "Пароль короче 6-ти символов");
         }
-        if (!registerForm.getCaptcha().equals(registerForm.getCaptchaSecret())) {
+
+        if (!captchaRepository.findByCode(registerForm.getCaptcha()).orElseThrow().getSecretCode()
+                .equals(registerForm.getCaptchaSecret())) {
             errors.put("captcha", "Код с картинки введен неверно");
         }
         if (errors.size() > 0) {

@@ -116,7 +116,7 @@ public class ImageDownloadService{
 
     }
 
-    private static String getImageGenerationPath(int nameLength) {
+    public static String getImageGenerationPath(int nameLength) {
         return new StringBuilder("src/main/upload/").append(RandomStringUtils.randomAlphabetic(nameLength))
                 .append("/").append(RandomStringUtils.randomAlphabetic(nameLength))
                 .append("/").append(RandomStringUtils.randomAlphabetic(nameLength))

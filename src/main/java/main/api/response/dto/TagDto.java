@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 public class TagDto {
 
-    @JsonProperty("name")
     private String name;
 
-    @JsonProperty("weight")
     private double weight;
 }

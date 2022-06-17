@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class CheckResponse {
 
-    @JsonProperty("result")
     boolean result;
 
     @JsonProperty("user")

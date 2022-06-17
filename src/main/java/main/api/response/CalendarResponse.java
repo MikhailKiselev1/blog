@@ -13,9 +13,7 @@ import java.util.TreeSet;
 @Data
 public class CalendarResponse {
 
-    @JsonProperty("years")
     TreeSet<String> years;
 
-    @JsonProperty("posts")
     TreeMap<String, Integer> posts;
 }

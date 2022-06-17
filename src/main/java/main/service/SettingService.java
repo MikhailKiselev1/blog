@@ -20,13 +20,13 @@ public class SettingService {
     public SettingResponse getSetting() {
 
         SettingResponse settingResponse = new SettingResponse();
-        if (globalSettingRepository.findById(1).get().getValue().equals("YES")) {
+        if (globalSettingRepository.findByCode("MULTIUSER_MODE").orElseThrow().getValue().equals("YES")) {
             settingResponse.setMultiuserMode(true);
         }
-        if (globalSettingRepository.findById(2).get().getValue().equals("YES")) {
+        if (globalSettingRepository.findByCode("POST_PREMODERATION").orElseThrow().getValue().equals("YES")) {
             settingResponse.setPostPremoderation(true);
         }
-        if (globalSettingRepository.findById(3).get().getValue().equals("YES")) {
+        if (globalSettingRepository.findByCode("STATISTICS_IS_PUBLIC").orElseThrow().getValue().equals("YES")) {
             settingResponse.setStatisticsIsPublic(true);
         }
         return settingResponse;
@@ -35,13 +35,13 @@ public class SettingService {
     public void putSetting(SettingRequest settingRequest) {
 
         globalSettingRepository.findAll().forEach(globalSetting -> {
-            if (globalSetting.getId() == 1) {
+            if (globalSetting.getCode().equals("MULTIUSER_MODE")) {
                 globalSetting.setValue(booleanToString(settingRequest.isMultiuserMode()));
             }
-            if (globalSetting.getId() == 2) {
+            if (globalSetting.getCode().equals("POST_PREMODERATION")) {
                 globalSetting.setValue(booleanToString(settingRequest.isPostPremoderation()));
             }
-            if (globalSetting.getId() == 3) {
+            if (globalSetting.getCode().equals("STATISTICS_IS_PUBLIC")) {
                 globalSetting.setValue(booleanToString(settingRequest.isStatisticsIsPublic()));
             }
             globalSettingRepository.save(globalSetting);
@@ -51,7 +51,7 @@ public class SettingService {
 
     private String booleanToString(boolean result) {
         if (result) {
-            return "NO";
-        } else return "YES";
+            return "YES";
+        } else return "NO";
     }
 }

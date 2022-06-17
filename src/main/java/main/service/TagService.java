@@ -7,6 +7,7 @@ import main.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -30,13 +31,14 @@ public class TagService {
 
         if (tagList.size() > 0) {
             Tag popularTag = tagList.stream().max(Comparator.comparing(t -> t.getPostsWithTags().size())).get();
-            int tagsCount = tagList.size();
+            double tagsCount = tagList.size();
             double k = 1.0 / (popularTag.getPostsWithTags().size() / tagsCount);
             if (query == null) {
                 tagList.forEach(t -> {
                     TagDto tagDto = new TagDto();
                     tagDto.setName(t.getName());
-                    tagDto.setWeight(t.getPostsWithTags().size() / tagsCount * k);
+                    tagDto.setWeight(new BigDecimal(Double.toString
+                            (t.getPostsWithTags().size() / tagsCount * k)).setScale(2).doubleValue());
                     finishTagList.add(tagDto);
                 });
             } else {
@@ -44,7 +46,8 @@ public class TagService {
                     if (t.getName().equals(query)) {
                         TagDto tagDto = new TagDto();
                         tagDto.setName(t.getName());
-                        tagDto.setWeight(Math.round(t.getPostsWithTags().size() / tagsCount * k));
+                        tagDto.setWeight(new BigDecimal(Double.toString
+                                (t.getPostsWithTags().size() / tagsCount * k)).setScale(2).doubleValue());
                         finishTagList.add(tagDto);
                     }
                 });
@@ -53,4 +56,5 @@ public class TagService {
         }
         return tagsResponse;
     }
+
 }

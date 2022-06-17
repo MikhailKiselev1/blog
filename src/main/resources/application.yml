@@ -1,9 +1,19 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfo23_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfob2_bd?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: ${USERNAME}
     password: ${PASSWORD}
-
+  mail:
+    host: ${MAIL_HOST}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: ${MAIL_PORT}
+    protocol: ${MAIL_PROTOCOL}
+    test-connection: true
+    properties:
+      "mail.smtp.auth": true
+      "mail.transport.protocol": ${MAIL_PROTOCOL}
+      "mail.debug": false
 
   jpa:
     hibernate:

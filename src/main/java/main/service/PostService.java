@@ -13,8 +13,12 @@ import main.model.Tag;
 import main.model.User;
 import main.model.enums.ModerationStatus;
 import main.repositories.PostRepository;
+import main.repositories.PostVotesRepository;
 import main.repositories.TagRepository;
 import main.repositories.UserRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +36,15 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostVotesRepository postVotesRepository;
 
     @Autowired
     public PostService(TagRepository tagRepository, PostRepository postRepository,
-                       UserRepository userRepository) {
+                       UserRepository userRepository, PostVotesRepository postVotesRepository) {
         this.tagRepository = tagRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.postVotesRepository = postVotesRepository;
     }
 
 
@@ -46,25 +52,24 @@ public class PostService {
 
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.getActionCurrentNewPosts();
+        List<Post> actionCurrentNewPosts = getSortedCollection(mode, offset, limit);
         if (!actionCurrentNewPosts.isEmpty()) {
-            getSortedCollection(mode, actionCurrentNewPosts, offset, limit)
-                    .forEach(p -> postDtoList.add(addPostDto(p)));
+            actionCurrentNewPosts.forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
         postsResponse.setCount(postDtoList.size());
         return postsResponse;
     }
 
-    public PostGetResponse getPostSearch(Integer offset, Integer limit, String mode, String query) {
+    public PostGetResponse getPostSearch(Integer offset, Integer limit, String query) {
         if (query.matches("[\\s]") || query.equals("")) {
-            return getPost(offset, limit, mode);
+            return getPost(offset, limit, "recent");
         } else {
             PostGetResponse postsResponse = new PostGetResponse();
-            ArrayList<Post> actionCurrentNewPosts = (ArrayList<Post>) postRepository.findAll();
             List<PostDto> postDtoList = new ArrayList<>();
-            getSortedCollection(mode, actionCurrentNewPosts, offset, limit).forEach(p -> {
-                if (p.getText().matches(query)) {
+            getSortedCollection("recent", offset, limit).forEach(p -> {
+                if (p.getText().toLowerCase(Locale.ROOT).contains(query)
+                        || p.getTitle().toLowerCase(Locale.ROOT).contains(query)) {
                     postDtoList.add(addPostDto(p));
                 }
             });
@@ -77,11 +82,10 @@ public class PostService {
     public PostGetResponse getPostByDate(Integer offset, Integer limit, String mode, String date) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        List<Post> filterDataList = postRepository.findAll().stream()
+        List<Post> filterDataList = getSortedCollection(mode, offset, limit).stream()
                 .filter(post -> post.getTime().format(day).equals(date)).collect(Collectors.toList());
         if (!filterDataList.isEmpty()) {
-            getSortedCollection(mode, filterDataList, offset, limit)
-                    .forEach(p -> postDtoList.add(addPostDto(p)));
+            filterDataList.forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
         postsResponse.setCount(postDtoList.size());
@@ -91,13 +95,11 @@ public class PostService {
     public PostGetResponse getPostByTag(Integer offset, Integer limit, String mode, String tag) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        List<Tag> tagList = tagRepository.findAll();
-        Tag searchTag = tagList.stream().filter(t -> t.getName().equals(tag)).findFirst().orElseThrow();
-        List<Post> filterDataList = postRepository.findAll().stream()
+        Tag searchTag = tagRepository.findByName(tag).orElseThrow();
+        List<Post> filterDataList = getSortedCollection(mode, offset, limit).stream()
                 .filter(post -> post.getTagsList().contains(searchTag)).collect(Collectors.toList());
         if (!filterDataList.isEmpty()) {
-            getSortedCollection(mode, filterDataList, offset, limit)
-                    .forEach(p -> postDtoList.add(addPostDto(p)));
+            filterDataList.forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
         postsResponse.setCount(postDtoList.size());
@@ -106,24 +108,30 @@ public class PostService {
 
     public PostIdResponse getPostById(int id, Principal principal) {
         PostIdResponse postIdResponse = new PostIdResponse();
-        Post post = postRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(Integer.parseInt(principal.getName())).orElse(null);
+        Post post;
+        if (userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow().getIsModerator() == 1) {
+            post = postRepository.findById(id).orElseThrow();
+        } else {
+            post = postRepository.getActionCurrentNewPostsById(id).orElseThrow();
+        }
 
-        if (principal != null) {
+        if (user != null) {
             User currentUser = userRepository.findById(Integer.parseInt(principal.getName())).orElse(null);
-            if (currentUser.getIsModerator() != 1 && !post.getUserId().equals(currentUser)) {
+            if (currentUser.getIsModerator() != 1 && !post.getUser().equals(currentUser)) {
                 post.setViewCount(post.getViewCount() + 1);
             }
         }
         // добавляю просмотр
         postIdResponse.setId(post.getId());
-        postIdResponse.setTimestamp(post.getTime().getNano());
+        postIdResponse.setTimestamp(post.getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         PostUserDto postUserDto = new PostUserDto();
-        User user = post.getUserId();
-        postUserDto.setId(user.getId());
-        postUserDto.setName(user.getName());
+        User postUser = post.getUser();
+        postUserDto.setId(postUser.getId());
+        postUserDto.setName(postUser.getName());
         postIdResponse.setUser(postUserDto);
         postIdResponse.setTitle(post.getTitle());
-        postIdResponse.setAnnounce(post.getText());
+        postIdResponse.setText(post.getText());
         postIdResponse.setLikeCount((int) post.getPostVotesList().stream().filter(u -> u.getValue() == 1).count());
         postIdResponse.setDislikeCount((int) post.getPostVotesList().stream().filter(u -> u.getValue() == -1).count());
         postIdResponse.setCommentCount(post.getPostComments().size());
@@ -148,17 +156,17 @@ public class PostService {
         postIdResponse.setComments(postCommentsDtoList);
         //--------список дто комментов
         postIdResponse.setTags(post.getTagsList().stream().map(Tag::getName).collect(Collectors.toList()));
-        postRepository.save(post);
+        postRepository.saveAndFlush(post);
         return postIdResponse;
     }
 
-    public PostGetResponse getMyPosts(Integer offset, Integer limit, String status) {
+    public PostGetResponse getMyPosts(Integer offset, Integer limit, String status, Principal principal) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        ArrayList<Post> allPosts = (ArrayList<Post>) postRepository.findAll();
-        if (!allPosts.isEmpty()) {
-            getMySortedCollection(status, allPosts, offset, limit)
-                    .forEach(p -> postDtoList.add(addPostDto(p)));
+        User user = userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow();
+        List<Post> allMyPosts = getMySortedCollection(status, offset, limit, user.getId());
+        if (!allMyPosts.isEmpty()) {
+            allMyPosts.forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
         postsResponse.setCount(postDtoList.size());
@@ -168,9 +176,9 @@ public class PostService {
     public PostGetResponse getPostModeration(Integer offset, Integer limit, String status, Principal principal) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
-        ArrayList<Post> allPosts = (ArrayList<Post>) postRepository.findAll();
-        if (!allPosts.isEmpty()) {
-            getModeratorSortedCollection(status, allPosts, offset, limit, principal)
+        ArrayList<Post> allModerationPosts = (ArrayList<Post>) getModeratorSortedCollection(status, offset, limit, principal);
+        if (!allModerationPosts.isEmpty()) {
+            allModerationPosts
                     .forEach(p -> postDtoList.add(addPostDto(p)));
         }
         postsResponse.setPostsDto(postDtoList);
@@ -178,13 +186,15 @@ public class PostService {
         return postsResponse;
     }
 
-    public ErrorsResponse postPost(PostRequest postRequest, Principal principal) {
+    public ErrorsResponse setPost(PostRequest postRequest, Principal principal) {
         ErrorsResponse postAddResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
         if (postRequest.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
         } else if (postRequest.getTitle().length() < 3) {
             errors.put("title", "Заголовок слишком короткий");
+        } else if (postRequest.getTitle().length() > 50) {
+            errors.put("title", "Заголовок слишком длинный");
         }
 
         if (postRequest.getText() == null) {
@@ -201,7 +211,7 @@ public class PostService {
             Post post = new Post();
             post.setIsActive(postRequest.getActive());
             post.setModerationStatus(ModerationStatus.NEW);
-            post.setUserId(userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow());
+            post.setUser(userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow());
             //перевожу время из секунд в обьект класса LocalDateTime
             LocalDateTime postTime = LocalDateTime.ofEpochSecond
                     (postRequest.getTimestamp(), 0, ZoneOffset.UTC);
@@ -218,13 +228,19 @@ public class PostService {
     }
 
     public ErrorsResponse editPost(int id, PostRequest postRequest, Principal principal) {
+
         ErrorsResponse postAddResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
+
         Post post = postRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow();
+
         if (postRequest.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
         } else if (postRequest.getTitle().length() < 3) {
             errors.put("title", "Заголовок слишком короткий");
+        } else if (postRequest.getTitle().length() > 50) {
+            errors.put("title", "Заголовок слишком длинный");
         }
 
         if (postRequest.getText() == null) {
@@ -233,7 +249,7 @@ public class PostService {
             errors.put("text", "Текст слишком короткий");
         }
 
-        if (!principal.getName().equals(post.getUserId().getEmail())) {
+        if (!user.equals(post.getUser()) || user.getIsModerator() != 1) {
             errors.put("user", "Автор поста другой пользователь");
         }
 
@@ -251,6 +267,8 @@ public class PostService {
             post.setTitle(postRequest.getTitle());
             post.setText(postRequest.getText());
             post.setViewCount(0);
+            post.setModerationStatus(user.getIsModerator() == 1 ?
+                    post.getModerationStatus() : ModerationStatus.NEW);
             setTags(postRequest.getTags(), post);
             postRequest.getTags().forEach(System.out::println);
             postRepository.saveAndFlush(post);
@@ -262,14 +280,16 @@ public class PostService {
     private PostDto addPostDto(Post p) {
         PostDto postDto = new PostDto();
         postDto.setId(p.getId());
-        postDto.setTimestamp(p.getTime().getNano());
+        postDto.setTimestamp(p.getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         PostUserDto postUserDto = new PostUserDto();
-        User user = p.getUserId();
+        User user = p.getUser();
         postUserDto.setId(user.getId());
         postUserDto.setName(user.getName());
         postDto.setUser(postUserDto);
         postDto.setTitle(p.getTitle());
-        postDto.setAnnounce(p.getText());
+        String parseText = Jsoup.clean(p.getText(), Safelist.none());
+        postDto.setAnnounce(parseText.length() > 147 ? parseText.substring(0, 147) + "..."
+                : parseText);
         postDto.setLikeCount((int) p.getPostVotesList().stream().filter(u -> u.getValue() == 1).count());
         postDto.setDislikeCount((int) p.getPostVotesList().stream().filter(u -> u.getValue() == -1).count());
         postDto.setCommentCount(p.getPostComments().size());
@@ -297,81 +317,70 @@ public class PostService {
     }
 
 
-    private List<Post> getSortedCollection(String mode, List<Post> postList, Integer offset, Integer limit) {
+    private List<Post> getSortedCollection(String mode, Integer offset, Integer limit) {
         List<Post> startList;
 
         switch (mode) {
+            case "recent":
+                startList = (List<Post>) postRepository.findAllPostOrderByRecent();
+                break;
             case "popular":
-                startList = postList.stream().filter(p -> p.getPostComments().size() > 0)
-                        .sorted(Comparator.comparing(p -> p.getPostComments().size()))
-                        .sorted(Collections.reverseOrder())
-                        .collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findAllPostOrderByPopular();
                 break;
             case "best":
-                startList = postList.stream().filter(p -> p.getPostVotesList().size() > 0)
-                        .sorted(Comparator.comparing(p -> p.getPostVotesList().size()))
-                        .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findAllPostOrderByBest();
                 break;
             case "early":
-                startList = postList.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findAllPostOrderByEarly();
                 break;
             default:
-                startList = postList.stream().sorted(Comparator.comparing(Post::getTime))
-                        .sorted(Collections.reverseOrder()).collect(Collectors.toList());
-                break;
+                throw new IllegalStateException("Unexpected value: " + mode);
         }
+
         return getFinishList(startList, offset, limit);
     }
 
-    private List<Post> getMySortedCollection(String status, List<Post> postList, Integer offset, Integer limit) {
+    private List<Post> getMySortedCollection(String status, Integer offset,
+                                             Integer limit, int userId) {
         List<Post> startList;
 
 
         switch (status) {
             case "inactive":
-                startList = postList.stream().filter(p -> p.getIsActive() == 0)
-                        .sorted(Comparator.comparing(Post::getTime))
-                        .sorted(Collections.reverseOrder())
-                        .collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findMyPostOrderByInactive(userId);
                 break;
             case "pending":
-                startList = postList.stream().filter(p -> p.getIsActive() == 1 && p.getModerationStatus() == ModerationStatus.NEW)
-                        .sorted(Comparator.comparing(Post::getTime))
-                        .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findMyPostOrderByPending(userId);
                 break;
             case "declined":
-                startList = postList.stream().filter(p -> p.getIsActive() == 1 && p.getModerationStatus() == ModerationStatus.DECLINED)
-                        .sorted(Comparator.comparing(Post::getTime))
-                        .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+                startList = (List<Post>) postRepository.findMyPostOrderByDeclined(userId);
+                break;
+            case "published":
+                startList = (List<Post>) postRepository.findMyPostOrderByPublished(userId);;
                 break;
             default:
-                startList = postList.stream().filter(p -> p.getIsActive() == 1 && p.getModerationStatus() == ModerationStatus.ACCEPTED)
-                        .sorted(Comparator.comparing(Post::getTime))
-                        .sorted(Collections.reverseOrder()).collect(Collectors.toList());
-                break;
+                throw new IllegalStateException("Unexpected value: " + status);
         }
 
         return getFinishList(startList, offset, limit);
     }
 
-    private List<Post> getModeratorSortedCollection(String status, List<Post> postList, Integer offset, Integer limit, Principal principal) {
+    private List<Post> getModeratorSortedCollection(String status, Integer offset, Integer limit, Principal principal) {
         List<Post> startList;
+        int adminId = Integer.parseInt(principal.getName());
 
-        if (status.equals("new")) {
-            startList = postList.stream().filter(p -> p.getModerationStatus() == ModerationStatus.NEW)
-                    .sorted(Comparator.comparing(Post::getTime))
-                    .sorted(Collections.reverseOrder())
-                    .collect(Collectors.toList());
-        } else if (status.equals("declined")) {
-            startList = postList.stream().filter(p -> p.getModerator().getEmail().equals(principal.getName())
-                            && p.getModerationStatus() == ModerationStatus.DECLINED)
-                    .sorted(Comparator.comparing(Post::getTime))
-                    .sorted(Collections.reverseOrder()).collect(Collectors.toList());
-        } else {
-            startList = postList.stream().filter(p -> p.getModerator().getEmail().equals(principal.getName())
-                            && p.getModerationStatus() == ModerationStatus.ACCEPTED)
-                    .sorted(Comparator.comparing(Post::getTime))
-                    .sorted(Collections.reverseOrder()).collect(Collectors.toList());
+        switch (status) {
+            case "new":
+                startList = (List<Post>) postRepository.findAllNewPostByModerate();
+                break;
+            case "declined":
+                startList = (List<Post>) postRepository.findAllDeclinedPostByModerate(adminId);
+                break;
+            case "accepted":
+                startList = (List<Post>) postRepository.findAllAcceptedPostByModerate(adminId);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + status);
         }
 
         return getFinishList(startList, offset, limit);

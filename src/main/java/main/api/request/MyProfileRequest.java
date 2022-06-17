@@ -11,5 +11,4 @@ public class MyProfileRequest {
     private String email;
     private String password;
     private int removePhoto;
-    private File photo;
 }

@@ -9,9 +9,7 @@ import java.io.File;
 @Data
 public class CaptchaResponse {
 
-    @JsonProperty("secret")
     private String secret;
 
-    @JsonProperty("image")
     private String image;
 }

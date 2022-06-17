@@ -45,8 +45,8 @@ public class PostCommentsService {
             postComments.setParentId(request.getParentId());
         }
 
-        postComments.setPostId(postRepository.findById(request.getPostId()).get());
-        postComments.setUserId(userRepository.findById(Integer.parseInt(principal.getName())).get());
+        postComments.setPostId(postRepository.findById(request.getPostId()).orElseThrow());
+        postComments.setUserId(userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow());
         postComments.setTime(LocalDateTime.now());
         postComments.setText(request.getText());
         postCommentsRepository.save(postComments);

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -41,7 +40,7 @@ public class User {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String photo;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> userPosts;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)

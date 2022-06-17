@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class PostUserDto {
 
-    @JsonProperty("id")
     private int id;
 
-    @JsonProperty("name")
     private String name;
 }

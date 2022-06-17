@@ -73,6 +73,7 @@ public class ApiGeneralController {
         return calendarService.getCalendar(year);
     }
 
+    @PreAuthorize("hasAuthority('user:write')")
     @PostMapping(value = "/profile/my", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ErrorsResponse profileEdit(@RequestBody MyProfileRequest request, Principal principal) throws IOException {
         return profileService.profileEdit(request, principal);
@@ -80,8 +81,13 @@ public class ApiGeneralController {
 
     @PreAuthorize("hasAuthority('user:write')")
     @PostMapping(value = "/profile/my", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ErrorsResponse profileEditMultipart(@RequestBody MyProfileRequest request, Principal principal) throws IOException {
-        return profileService.profileEdit(request, principal);
+    public ErrorsResponse profileEditMultipart( @RequestPart("photo") byte[] photo,
+                                                @RequestParam(value = "name") String name,
+                                                @RequestParam(value = "email") String email,
+                                                @RequestParam(value = "password", required = false) String password,
+                                                @RequestParam(value = "removePhoto", defaultValue = "0") Integer removePhoto,
+                                                Principal principal, HttpServletRequest request) throws IOException {
+        return profileService.profileImageEdit(photo, name, email, password, removePhoto, principal, request);
     }
 
 //    @PreAuthorize("hasAuthority('user:write')")
