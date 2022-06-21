@@ -35,12 +35,12 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value =
                     "SELECT * FROM posts p "
-                            + "LEFT JOIN post_votes pv1 ON  pv1.post_id = p.id "
+                            + "LEFT JOIN post_votes pv1 ON  pv1.post_id = p.id AND pv1.value = 1 "
                             + "WHERE p.moderation_status = 'accepted' "
                             + "AND p.is_active = 1 "
                             + "AND p.time <= NOW() "
                             + "GROUP BY p.id "
-                            + "ORDER BY COUNT(pv1.value = 1) DESC",
+                            + "ORDER BY COUNT(pv1.value) DESC",
             nativeQuery = true)
     Collection<Post> findAllPostOrderByBest();
 

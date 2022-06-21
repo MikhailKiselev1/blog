@@ -52,6 +52,7 @@ public class ApiPostController {
         return postService.getPostByTag(offset, limit, mode, tag);
     }
 
+    @PreAuthorize("hasAuthority('user:write')")
     @GetMapping("/{id}")
     public PostIdResponse postById(@PathVariable long id, Principal principal) {
         return postService.getPostById((int) id, principal);
