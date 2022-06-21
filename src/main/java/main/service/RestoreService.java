@@ -32,7 +32,7 @@ public class RestoreService {
             message.setFrom(FROM_EMAIL_ADRESS);
             message.setTo(request.getEmail());
             message.setSubject ("Subject: Simple Mail");
-            message.setText ("https://kiselev-java-skillbox.herokuapp.com/login/change-password/" + hash);
+            message.setText ("Ссылка для восстановления пароля: https://kiselev-java.herokuapp.com/login/change-password/" + hash);
 
             mailSender.send(message);
 

@@ -7,6 +7,8 @@ import main.model.User;
 import main.repositories.CaptchaRepository;
 import main.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -25,16 +27,19 @@ public class PasswordService {
 
     public ErrorsResponse getPassword(EditPasswordRequest request) {
         User user = userRepository.findByCode(request.getCode()).orElse(null);
-        CaptchaCodes captchaCodes = captchaRepository.findByCode(request.getCaptcha()).orElse(null);
+        CaptchaCodes captchaCodes = captchaRepository.findByCode(request.getCaptcha()).orElseThrow();
         ErrorsResponse errorsResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         if (user == null) {
             errors.put("code", "ссылка на восстановления пароля устарела.\n" +
                     "<a href=\n" +
                     "\"/auth/restore\">Запросить ссылку снова</a>");
         }
-        if (!captchaCodes.getSecretCode().equals(request.getCaptchaSecret())) {
+        if (!captchaCodes.getCode().equals(request.getCaptchaSecret())) {
+            System.out.println(captchaCodes.getSecretCode());
+            System.out.println(request.getCaptchaSecret());
             errors.put("captcha", "код с картинки введен неверно");
         }
         if (request.getPassword().length() < 6) {
@@ -44,6 +49,9 @@ public class PasswordService {
             errorsResponse.setResult(false);
             errorsResponse.setErrors(errors);
         } else {
+            user.setPassword(passwordEncoder.encode(request.getPassword())
+                    .replaceFirst("\\{bcrypt}", ""));
+            userRepository.saveAndFlush(user);
             errorsResponse.setResult(true);
         }
         return errorsResponse;
