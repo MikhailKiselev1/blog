@@ -30,7 +30,7 @@ public class RestoreService {
             String hash = RandomStringUtils.randomAlphabetic(15);
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(FROM_EMAIL_ADRESS);
-            message.setTo(FROM_EMAIL_ADRESS);
+            message.setTo(request.getEmail());
             message.setSubject ("Subject: Simple Mail");
             message.setText ("https://kiselev-java-skillbox.herokuapp.com/login/change-password/" + hash);
 
