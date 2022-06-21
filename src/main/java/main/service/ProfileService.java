@@ -5,6 +5,7 @@ import main.api.response.ErrorsResponse;
 import main.model.User;
 import main.other.RegularExpressions;
 import main.repositories.UserRepository;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,17 +62,19 @@ public class ProfileService {
             return errorsResponse;
         }
 
-            System.out.println("фаил передал");
-            String path = "upload/" + RandomStringUtils.randomAlphabetic(5);
-            Files.createDirectories(Paths.get(path));
-            File finalImageFolder = new File(path);
-            InputStream is = new ByteArrayInputStream(photo);
-            BufferedImage bufferedImage = ImageIO.read(is);
-            bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.SPEED, 36 * 2, 36 * 2);
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 36, 36);
+//            String path = "upload/" + RandomStringUtils.randomAlphabetic(5) + ".jpg";
+//            String realPath = request.getServletContext().getRealPath(path);
+//            Files.createDirectories(Paths.get(realPath));
+//            File finalImageFolder = new File(realPath);
+//            InputStream is = new ByteArrayInputStream(photo);
+//            BufferedImage bufferedImage = ImageIO.read(is);
+//            bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.SPEED, 36 * 2, 36 * 2);
+//            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 36, 36);
+//        System.out.println(bufferedImage.toString());
+//            ImageIO.write(bufferedImage,"jpg", finalImageFolder);
+//            user.setPhoto(realPath);
 
-            ImageIO.write(bufferedImage,"jpg", finalImageFolder);
-            user.setPhoto(path + ".jpg");
+        addImage(photo, request, principal);
 
 
         if (password != null) {
@@ -90,6 +93,21 @@ public class ProfileService {
         userRepository.saveAndFlush(user);
 
         return errorsResponse;
+    }
+
+    public void addImage(byte[] photo,
+                         HttpServletRequest request,
+                         Principal principal) throws IOException {
+        String path = "upload/" + principal.hashCode() + ".jpg";
+        String realPath = request.getServletContext().getRealPath(path);
+
+        File file = new File(realPath);
+        FileUtils.writeByteArrayToFile(file, photo);
+
+        User user = userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow();
+        user.setPhoto(path);
+        userRepository.save(user);
+        System.out.println(userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow().getPhoto());
     }
 
     public ErrorsResponse profileEdit(MyProfileRequest request, Principal principal) throws IOException {
