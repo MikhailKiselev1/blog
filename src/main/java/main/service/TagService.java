@@ -38,7 +38,8 @@ public class TagService {
                     TagDto tagDto = new TagDto();
                     tagDto.setName(t.getName());
                     tagDto.setWeight(new BigDecimal(Double.toString
-                            (t.getPostsWithTags().size() / tagsCount * k)).setScale(2).doubleValue());
+                            (t.getPostsWithTags().size() / tagsCount * k))
+                            .setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                     finishTagList.add(tagDto);
                 });
             } else {
@@ -47,7 +48,8 @@ public class TagService {
                         TagDto tagDto = new TagDto();
                         tagDto.setName(t.getName());
                         tagDto.setWeight(new BigDecimal(Double.toString
-                                (t.getPostsWithTags().size() / tagsCount * k)).setScale(2).doubleValue());
+                                (t.getPostsWithTags().size() / tagsCount * k))
+                                .setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
                         finishTagList.add(tagDto);
                     }
                 });
