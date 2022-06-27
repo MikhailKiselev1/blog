@@ -25,7 +25,7 @@ public class TagService {
 
     public TagsResponse getTag(String query) {
 
-        List<Tag> tagList = tagRepository.findAll();
+        List<Tag> tagList = tagRepository.findAllActualTags();
         TagsResponse tagsResponse = new TagsResponse();
         List<TagDto> finishTagList = new ArrayList<>();
 

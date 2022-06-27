@@ -10,15 +10,12 @@ import main.api.response.PostGetResponse;
 import main.api.response.dto.PostUserDto;
 import main.model.Post;
 import main.model.Tag;
+import main.model.Tag2Post;
 import main.model.User;
 import main.model.enums.ModerationStatus;
-import main.repositories.PostRepository;
-import main.repositories.PostVotesRepository;
-import main.repositories.TagRepository;
-import main.repositories.UserRepository;
+import main.repositories.*;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
-import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,20 +33,19 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final PostVotesRepository postVotesRepository;
+    private final Tag2PostRepository tag2PostRepository;
 
     @Autowired
     public PostService(TagRepository tagRepository, PostRepository postRepository,
-                       UserRepository userRepository, PostVotesRepository postVotesRepository) {
+                       UserRepository userRepository, Tag2PostRepository tag2PostRepository) {
         this.tagRepository = tagRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.postVotesRepository = postVotesRepository;
+        this.tag2PostRepository = tag2PostRepository;
     }
 
 
     public PostGetResponse getPost(Integer offset, Integer limit, String mode) {
-
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
         List<Post> actionCurrentNewPosts = getSortedCollection(mode, offset, limit);
@@ -109,20 +105,13 @@ public class PostService {
     public PostIdResponse getPostById(int id, Principal principal) {
         PostIdResponse postIdResponse = new PostIdResponse();
         User user = userRepository.findById(Integer.parseInt(principal.getName())).orElse(null);
-        Post post;
-        if (userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow().getIsModerator() == 1) {
-            post = postRepository.findById(id).orElseThrow();
-        } else {
+        Post post = postRepository.findById(id).orElseThrow();
+
+        if (user.getIsModerator() != 1 && !post.getUser().equals(user)) {
             post = postRepository.getActionCurrentNewPostsById(id).orElseThrow();
+            post.setViewCount(post.getViewCount() + 1);
         }
 
-        if (user != null) {
-            User currentUser = userRepository.findById(Integer.parseInt(principal.getName())).orElse(null);
-            if (currentUser.getIsModerator() != 1 && !post.getUser().equals(currentUser)) {
-                post.setViewCount(post.getViewCount() + 1);
-            }
-        }
-        // добавляю просмотр
         postIdResponse.setId(post.getId());
         postIdResponse.setTimestamp(post.getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         PostUserDto postUserDto = new PostUserDto();
@@ -235,6 +224,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow();
         User user = userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow();
 
+
         if (postRequest.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
         } else if (postRequest.getTitle().length() < 3) {
@@ -249,7 +239,7 @@ public class PostService {
             errors.put("text", "Текст слишком короткий");
         }
 
-        if (!user.equals(post.getUser()) || user.getIsModerator() != 1) {
+        if (user.getIsModerator() != 1 && !post.getUser().equals(user)) {
             errors.put("user", "Автор поста другой пользователь");
         }
 
@@ -269,6 +259,13 @@ public class PostService {
             post.setViewCount(0);
             post.setModerationStatus(user.getIsModerator() == 1 ?
                     post.getModerationStatus() : ModerationStatus.NEW);
+
+            post.getTagsList().forEach(tag -> {
+                if (!postRequest.getTags().contains(tag)) {
+                    Tag2Post tag2Post = tag2PostRepository.findTag2Post(post.getId(), tag.getId()).orElseThrow();
+                    tag2PostRepository.delete(tag2Post);
+                }
+            });
             setTags(postRequest.getTags(), post);
             postRequest.getTags().forEach(System.out::println);
             postRepository.saveAndFlush(post);
@@ -287,7 +284,7 @@ public class PostService {
         postUserDto.setName(user.getName());
         postDto.setUser(postUserDto);
         postDto.setTitle(p.getTitle());
-        String parseText = Jsoup.clean(p.getText(), Safelist.none());
+        String parseText = Jsoup.clean(p.getText(), Safelist.none()).replaceAll("&nbsp;", " ");
         postDto.setAnnounce(parseText.length() > 147 ? parseText.substring(0, 147) + "..."
                 : parseText);
         postDto.setLikeCount((int) p.getPostVotesList().stream().filter(u -> u.getValue() == 1).count());

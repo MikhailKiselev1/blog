@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class StatisticService {
         statisticResponse.setDislikesCount(myPostList == null ? 0
                 : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
         statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
-                .orElseThrow().getTime().getNano());
+                .orElseThrow().getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         statisticResponse.setViewsCount(posts
                 .stream().map(Post::getViewCount).reduce(Integer::sum).orElse(0));
 
@@ -56,7 +57,7 @@ public class StatisticService {
         statisticResponse.setDislikesCount(myPostList == null ? 0
                 : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
         statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
-                .orElseThrow().getTime().getNano());
+                .orElseThrow().getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         statisticResponse.setViewsCount(postRepository.findAll()
                 .stream().map(Post::getViewCount).reduce(Integer::sum).orElseThrow());
 
