@@ -29,15 +29,16 @@ public class StatisticService {
     public StatisticResponse getStatisticMy(Principal principal) {
 
         StatisticResponse statisticResponse = new StatisticResponse();
-        List<PostVotes> myPostList = postVotesRepository.findByUserId(Integer.parseInt(principal.getName()));
+        List<PostVotes> myPostVotesList = postVotesRepository.findByUserId(Integer.parseInt(principal.getName()));
         List<Post> posts = (List<Post>) postRepository.findByUserId(Integer.parseInt(principal.getName()));
+        Post firstPost = posts.stream().min(Comparator.comparing(Post::getTime)).orElse(null);
 
         statisticResponse.setPostsCount(posts == null ? 0 : posts.size());
-        statisticResponse.setLikesCount(myPostList == null ? 0
-                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
-        statisticResponse.setDislikesCount(myPostList == null ? 0
-                : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
-        statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
+        statisticResponse.setLikesCount(myPostVotesList == null ? 0
+                : (int) myPostVotesList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
+        statisticResponse.setDislikesCount(myPostVotesList == null ? 0
+                : (int) myPostVotesList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
+        statisticResponse.setFirstPublication(firstPost == null ? 0 : posts.stream().min(Comparator.comparing(Post::getTime))
                 .orElseThrow().getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         statisticResponse.setViewsCount(posts
                 .stream().map(Post::getViewCount).reduce(Integer::sum).orElse(0));
@@ -56,7 +57,7 @@ public class StatisticService {
                 : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == 1).count());
         statisticResponse.setDislikesCount(myPostList == null ? 0
                 : (int) myPostList.stream().filter(postVotes -> postVotes.getValue() == -1).count());
-        statisticResponse.setFirstPublication(myPostList.stream().min(Comparator.comparing(PostVotes::getTime))
+        statisticResponse.setFirstPublication(posts.stream().min(Comparator.comparing(Post::getTime))
                 .orElseThrow().getTime().atZone(ZoneOffset.UTC).toEpochSecond());
         statisticResponse.setViewsCount(postRepository.findAll()
                 .stream().map(Post::getViewCount).reduce(Integer::sum).orElseThrow());
