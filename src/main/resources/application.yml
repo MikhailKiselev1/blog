@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfob2_bd?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mkinfome_bd?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: ${USERNAME}
     password: ${PASSWORD}
   mail:
