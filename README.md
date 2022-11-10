@@ -3,20 +3,20 @@
 
 ### Краткое описание:
 
-У пользователя есть собственная страница блога, где он может добавлять новые сообщения в блог. Каждый аутентифицированный пользователь может комментировать сообщения, сделанные другими пользователями. Домашняя страница - это список всех сообщений, разбитый и отсорнированый по 4 параметрам (новые, самые обсуждаемые, лучшие, старые). Пользователи, не прошедшие аутентификацию, могут видеть предпоказ всех постов в блоге, но не могут развернуть,ставить лайки и дизлайки, добавлять новые сообщения или комментарии.
+The user has a blog page where they can add new blog posts. Each authenticated user can comment on posts made by other users. The home page is a list of all posts broken down and sorted by 4 parameters (newest, most talked about, best, oldest). Unauthenticated users can create backgrounds for all blog posts, but not expand, like and dislike, add new posts or comments.
 
 ****
 ![image](https://user-images.githubusercontent.com/93939646/176153859-f8d02f84-2a10-40f6-99c0-e057dc6a6554.png)
 
 
-### В проекте был использован следующий стек технологий:
+### The following technology stack was used in the project:
 
-- Spring Boot JPA - механизм для взаимодействия с сущностями базы данных.
-- Thymeleaf - серверный механизм Java-шаблонов.
-- Spring Boot Web - для создания web-приложения
-- Spring Security - механизмы аутентификации и авторизации и обеспечения безопасности.
-- Spring Boot Mail - для работы с электронной почтой
-- Lombok - проект по добавлению дополнительной функциональности в Java c помощью изменения исходного кода перед Java компиляцией.
-- Mysql - база данных 
-- Flywaydb - система управления версиями базы данных.
-- Cage — генератор captcha кода.
+- Spring Boot JPA - a mechanism for interacting with database entities.
+- Thymeleaf is a server-side Java templating engine.
+- Spring Boot Web - for creating a web application
+- Spring Security - mechanisms for authentication and authorization and security.
+- Spring Boot Mail - for working with e-mail
+- Lombok - a project to add additional functionality to Java by changing the source code before compiling Java.
+- mysql - database
+- Flywaydb - database version control system.
+- Cage - captcha code generator.
