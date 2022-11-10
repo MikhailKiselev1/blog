@@ -176,7 +176,7 @@ public class PostService {
     }
 
     public ErrorsResponse setPost(PostRequest postRequest, Principal principal) {
-        ErrorsResponse postAddResponse = new ErrorsResponse();
+
         HashMap<String, String> errors = new HashMap<>();
         if (postRequest.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
@@ -192,11 +192,7 @@ public class PostService {
             errors.put("text", "Текст слишком короткий");
         }
 
-        if (!errors.isEmpty()) {
-            postAddResponse.setResult(false);
-            postAddResponse.setErrors(errors);
-        } else {
-            postAddResponse.setResult(true);
+        if (errors.isEmpty()) {
             Post post = new Post();
             post.setIsActive(postRequest.getActive());
             post.setModerationStatus(ModerationStatus.NEW);
@@ -212,13 +208,14 @@ public class PostService {
             setTags(postRequest.getTags(), post);
             postRepository.saveAndFlush(post);
         }
-
-        return postAddResponse;
+        return ErrorsResponse.builder()
+                .result(false)
+                .errors(errors)
+                .build();
     }
 
     public ErrorsResponse editPost(int id, PostRequest postRequest, Principal principal) {
 
-        ErrorsResponse postAddResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
 
         Post post = postRepository.findById(id).orElseThrow();
@@ -244,10 +241,11 @@ public class PostService {
         }
 
         if (!errors.isEmpty()) {
-            postAddResponse.setResult(false);
-            postAddResponse.setErrors(errors);
+            return ErrorsResponse.builder()
+                    .result(false)
+                    .errors(errors)
+                    .build();
         } else {
-            postAddResponse.setResult(true);
             post.setIsActive(postRequest.getActive());
             //перевожу время из секунд в обьект класса LocalDateTime
             LocalDateTime postTime = LocalDateTime.ofEpochSecond
@@ -269,9 +267,10 @@ public class PostService {
             setTags(postRequest.getTags(), post);
             postRequest.getTags().forEach(System.out::println);
             postRepository.saveAndFlush(post);
+            return ErrorsResponse.builder()
+                    .result(true)
+                    .build();
         }
-
-        return postAddResponse;
     }
 
     private PostDto addPostDto(Post p) {

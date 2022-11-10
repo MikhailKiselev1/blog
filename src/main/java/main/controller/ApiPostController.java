@@ -1,5 +1,6 @@
 package main.controller;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.LikeRequest;
 import main.api.request.PostRequest;
 import main.api.response.ErrorsResponse;
@@ -16,16 +17,12 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/post")
+@RequiredArgsConstructor
 public class ApiPostController {
 
     private final PostService postService;
     private final LikeService likeService;
 
-    @Autowired
-    public ApiPostController(PostService postsService, LikeService likeService) {
-        this.postService = postsService;
-        this.likeService = likeService;
-    }
 
     @GetMapping
     public PostGetResponse post(@RequestParam(defaultValue = "0", required = false) Integer offset,

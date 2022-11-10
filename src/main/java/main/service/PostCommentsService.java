@@ -1,5 +1,6 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.PostCommentRequest;
 import main.api.response.PostCommentResponse;
 import main.model.PostComments;
@@ -14,30 +15,25 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @Service
+@RequiredArgsConstructor
 public class PostCommentsService {
 
     private final PostRepository postRepository;
     private final PostCommentsRepository postCommentsRepository;
     private final UserRepository userRepository;
 
-    @Autowired
-    public PostCommentsService(PostRepository postRepository, PostCommentsRepository postCommentsRepository, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.postCommentsRepository = postCommentsRepository;
-        this.userRepository = userRepository;
-    }
 
     public PostCommentResponse postComments(PostCommentRequest request, Principal principal) {
-        PostCommentResponse postCommentResponse = new PostCommentResponse();
         if (request.getText().length() < 3) {
-            postCommentResponse.setResult(false);
             HashMap<String, String> errors = new HashMap<>();
             errors.put("text", "Текст комментария не задан или слишком короткий");
-            postCommentResponse.setErrors(errors);
-            return postCommentResponse;
+
+            return PostCommentResponse.builder()
+                    .result(false)
+                    .errors(errors)
+                    .build();
         }
         PostComments postComments = new PostComments();
-        postCommentResponse.setId(postComments.getId());
 
         if (request.getParentId() == 0) {
             postComments.setParentId(null);
@@ -51,6 +47,8 @@ public class PostCommentsService {
         postComments.setText(request.getText());
         postCommentsRepository.save(postComments);
 
-        return postCommentResponse;
+        return PostCommentResponse.builder()
+                .id(postComments.getId())
+                .build();
     }
 }

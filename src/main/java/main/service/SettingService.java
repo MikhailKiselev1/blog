@@ -1,21 +1,17 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.SettingRequest;
 import main.api.response.SettingResponse;
 import main.repositories.GlobalSettingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class SettingService {
 
     private final GlobalSettingRepository globalSettingRepository;
-
-    @Autowired
-    public SettingService(GlobalSettingRepository globalSettingRepository) {
-        this.globalSettingRepository = globalSettingRepository;
-    }
 
     public SettingResponse getSetting() {
 

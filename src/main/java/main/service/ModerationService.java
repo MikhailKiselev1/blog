@@ -1,27 +1,23 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.ModerationRequest;
 import main.api.response.ModerationResponse;
 import main.model.Post;
 import main.model.enums.ModerationStatus;
 import main.repositories.PostRepository;
 import main.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 
 @Service
+@RequiredArgsConstructor
 public class ModerationService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    @Autowired
-    public ModerationService(PostRepository postRepository, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     public ModerationResponse postModeration(ModerationRequest request, Principal principal) {
         ModerationResponse moderationResponse = new ModerationResponse();

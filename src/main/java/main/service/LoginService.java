@@ -1,84 +1,67 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.response.LoginResponse;
 import main.api.request.LoginRequest;
 import main.api.response.dto.LoginUserDto;
 import main.model.User;
 import main.repositories.PostRepository;
 import main.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    public LoginService(UserRepository userRepository, PostRepository postRepository, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
-        this.authenticationManager = authenticationManager;
-    }
 
     public LoginResponse getUser(LoginRequest loginRequest) {
 
         User currentUser = userRepository.findByEmail(loginRequest.getEmail()).
                 orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
-        String userId = String.valueOf(currentUser.getId());
-
         Authentication auth = authenticationManager
                 .authenticate(
-                        new UsernamePasswordAuthenticationToken(userId, loginRequest.getPassword()));
+                        new UsernamePasswordAuthenticationToken(String.valueOf(currentUser.getId()),
+                                loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setResult(true);
-
-        LoginUserDto loginUserDto = new LoginUserDto();
-        loginUserDto.setId(currentUser.getId());
-        loginUserDto.setName(currentUser.getName());
-        loginUserDto.setPhoto(currentUser.getPhoto());
-        loginUserDto.setEmail(currentUser.getEmail());
-        loginUserDto.setModeration(currentUser.getIsModerator() == 1);
-        if (currentUser.getIsModerator() == 1) {
-            loginUserDto.setModerationCount(postRepository.getNewPosts().size());
-        }
-        loginUserDto.setSettings(currentUser.getIsModerator() == 1);
-        loginResponse.setUser(loginUserDto);
-
-        return loginResponse;
+        return LoginResponse.builder()
+                .result(true)
+                .user(getLoginUserDto(currentUser))
+                .build();
     }
 
     public LoginResponse getCheck(String id) {
+
         main.model.User currentUser =
                 userRepository.findById(Integer.parseInt(id))
                         .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
+        return LoginResponse.builder()
+                .result(true)
+                .user(getLoginUserDto(currentUser))
+                .build();
+    }
 
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setResult(true);
-
-        LoginUserDto loginUserDto = new LoginUserDto();
-        loginUserDto.setId(currentUser.getId());
-        loginUserDto.setName(currentUser.getName());
-        loginUserDto.setPhoto(currentUser.getPhoto());
-        loginUserDto.setEmail(currentUser.getEmail());
-        loginUserDto.setModeration(currentUser.getIsModerator() == 1);
-        if (currentUser.getIsModerator() == 1) {
-            loginUserDto.setModerationCount(postRepository.getNewPosts().size());
-        }
-        loginUserDto.setSettings(currentUser.getIsModerator() == 1);
-        loginResponse.setUser(loginUserDto);
-        return loginResponse;
+    private LoginUserDto getLoginUserDto(User user) {
+        return LoginUserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .photo(user.getPhoto())
+                .email(user.getEmail())
+                .moderation(user.getIsModerator() == 1)
+                .moderationCount(user.getIsModerator() == 1 ?
+                        postRepository.getNewPosts().size() : null)
+                .settings(user.getIsModerator() == 1)
+                .build();
     }
 }

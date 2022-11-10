@@ -32,7 +32,7 @@ public class ImageDownloadService{
 
     @Autowired
     public ImageDownloadService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        ImageDownloadService.userRepository = userRepository;
     }
 
     public ErrorsResponse postImage(MultipartFile image) throws IOException {
@@ -42,7 +42,6 @@ public class ImageDownloadService{
 
         int maxSizeImage = 5;
         // максимальный размер в Мбайтах
-        ErrorsResponse errorsResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
 
         if (!FILE_PATTERN.matcher(filename).matches()) {
@@ -57,8 +56,10 @@ public class ImageDownloadService{
 
 
         if (!errors.isEmpty()) {
-            errorsResponse.setErrors(errors);
-            errorsResponse.setResult(false);
+            return ErrorsResponse.builder()
+                    .errors(errors)
+                    .result(false)
+                    .build();
         } else {
             InputStream inputStream = image.getInputStream();
             Path randomPath = Paths.get(getImageGenerationPath(4));
@@ -69,9 +70,10 @@ public class ImageDownloadService{
 
             Files.copy(inputStream, fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             String finishPath = rootLocation.relativize(fullFilePath).toString().replace("\\","/");
-            errorsResponse.setImage(finishPath);
+            return ErrorsResponse.builder()
+                    .image(finishPath)
+                    .build();
         }
-        return errorsResponse;
     }
 
     public static ErrorsResponse addImage(MultipartFile image,
@@ -83,7 +85,7 @@ public class ImageDownloadService{
 
         int maxSizeImage = 5;
         // максимальный размер в Мбайтах
-        ErrorsResponse errorsResponse = new ErrorsResponse();
+
         HashMap<String, String> errors = new HashMap<>();
 
         if (!FILE_PATTERN.matcher(filename).matches()) {
@@ -98,8 +100,11 @@ public class ImageDownloadService{
 
 
         if (!errors.isEmpty()) {
-            errorsResponse.setErrors(errors);
-            errorsResponse.setResult(false);
+            return ErrorsResponse.builder()
+                    .errors(errors)
+                    .result(false)
+                    .build();
+
         } else {
             String path = "upload/" + principal.hashCode() + ".jpg";
             String realPath = request.getServletContext().getRealPath(path);
@@ -110,10 +115,10 @@ public class ImageDownloadService{
             User user = userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow();
             user.setPhoto(path);
             userRepository.save(user);
-            errorsResponse.setImage(path);
+            return ErrorsResponse.builder()
+                    .image(path)
+                    .build();
         }
-        return errorsResponse;
-
     }
 
     public static String getImageGenerationPath(int nameLength) {

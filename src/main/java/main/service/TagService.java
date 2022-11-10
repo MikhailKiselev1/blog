@@ -1,5 +1,6 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.response.dto.TagDto;
 import main.api.response.TagsResponse;
 import main.model.Tag;
@@ -13,15 +14,11 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TagService {
 
 
     private final TagRepository tagRepository;
-
-    @Autowired
-    public TagService(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
-    }
 
     public TagsResponse getTag(String query) {
 

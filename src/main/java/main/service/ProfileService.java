@@ -48,34 +48,21 @@ public class ProfileService {
     public ErrorsResponse profileImageEdit(byte[] photo, String name, String email, String password,
                                       Integer removePhoto, Principal principal, HttpServletRequest request) throws IOException {
         System.out.println(photo.toString());
-        ErrorsResponse errorsResponse = new ErrorsResponse();
         HashMap<String, String> errors = new HashMap<>();
         User user = userRepository.findById(Integer.parseInt(principal.getName())).get();
-
 
         errors.putAll(checkEmail(email, user.getEmail(), errors));
         errors.putAll(checkName(email, errors));
 
         if (!errors.isEmpty()) {
-            errorsResponse.setResult(false);
-            errorsResponse.setErrors(errors);
-            return errorsResponse;
+
+            return ErrorsResponse.builder()
+                    .result(false)
+                    .errors(errors)
+                    .build();
         }
 
-//            String path = "upload/" + RandomStringUtils.randomAlphabetic(5) + ".jpg";
-//            String realPath = request.getServletContext().getRealPath(path);
-//            Files.createDirectories(Paths.get(realPath));
-//            File finalImageFolder = new File(realPath);
-//            InputStream is = new ByteArrayInputStream(photo);
-//            BufferedImage bufferedImage = ImageIO.read(is);
-//            bufferedImage = Scalr.resize(bufferedImage,Scalr.Method.SPEED, 36 * 2, 36 * 2);
-//            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 36, 36);
-//        System.out.println(bufferedImage.toString());
-//            ImageIO.write(bufferedImage,"jpg", finalImageFolder);
-//            user.setPhoto(realPath);
-
         addImage(photo, request, principal);
-
 
         if (password != null) {
             errors = checkPassword(password, errors);
@@ -87,12 +74,11 @@ public class ProfileService {
             user.setPhoto("");
         }
 
-        errorsResponse.setResult(true);
         user.setName(name);
         user.setEmail(email);
         userRepository.saveAndFlush(user);
 
-        return errorsResponse;
+        return ErrorsResponse.builder().result(true).build();
     }
 
     public void addImage(byte[] photo,
@@ -111,7 +97,7 @@ public class ProfileService {
     }
 
     public ErrorsResponse profileEdit(MyProfileRequest request, Principal principal) throws IOException {
-        ErrorsResponse errorsResponse = new ErrorsResponse();
+
         HashMap<String, String> errors = new HashMap<>();
         User user = userRepository.findById(Integer.parseInt(principal.getName())).get();
 
@@ -120,9 +106,10 @@ public class ProfileService {
         errors.putAll(checkName(request.getName(), errors));
 
         if (!errors.isEmpty()) {
-            errorsResponse.setResult(false);
-            errorsResponse.setErrors(errors);
-            return errorsResponse;
+            return ErrorsResponse.builder()
+                    .result(false)
+                    .errors(errors)
+                    .build();
         }
 
         if (request.getPassword() != null) {
@@ -135,12 +122,14 @@ public class ProfileService {
             user.setPhoto("");
         }
 
-        errorsResponse.setResult(true);
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         userRepository.saveAndFlush(user);
 
-        return errorsResponse;
+        return ErrorsResponse
+                .builder()
+                .result(true)
+                .build();
     }
 
 

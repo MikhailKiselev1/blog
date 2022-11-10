@@ -2,29 +2,23 @@ package main.service;
 
 import com.github.cage.Cage;
 import com.github.cage.GCage;
+import lombok.RequiredArgsConstructor;
 import main.api.response.CaptchaResponse;
 import main.model.CaptchaCodes;
 import main.repositories.CaptchaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CaptchaService {
 
-
-    @Autowired
-    private CaptchaRepository captchaRepository;
+    private final CaptchaRepository captchaRepository;
 
 
     public CaptchaResponse getCaptcha() throws IOException {
@@ -35,7 +29,6 @@ public class CaptchaService {
             }
         });
         StringBuilder image = new StringBuilder("data:image/png;base64, ");
-        CaptchaResponse captchaResponse = new CaptchaResponse();
         CaptchaCodes captchaCodes = new CaptchaCodes();
         LocalDateTime time = LocalDateTime.now();
         Cage cage = new GCage();
@@ -56,8 +49,10 @@ public class CaptchaService {
         captchaCodes.setCode(captchaCode);
         captchaCodes.setSecretCode(secretCode);
         captchaRepository.save(captchaCodes);
-        captchaResponse.setSecret(captchaCode);
-        captchaResponse.setImage(image.toString());
-        return captchaResponse;
+
+        return CaptchaResponse.builder()
+                .secret(captchaCode)
+                .image(image.toString())
+                .build();
     }
 }

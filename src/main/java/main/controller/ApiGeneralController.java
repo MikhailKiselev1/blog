@@ -1,5 +1,6 @@
 package main.controller;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.ModerationRequest;
 import main.api.request.MyProfileRequest;
 import main.api.request.PostCommentRequest;
@@ -20,6 +21,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ApiGeneralController {
 
     private final InitResponse initResponse;
@@ -31,19 +33,6 @@ public class ApiGeneralController {
     private final PostCommentsService postCommentsService;
     private final ModerationService moderationService;
 
-    @Autowired
-    public ApiGeneralController(InitResponse initResponse, SettingService settingService,
-                                TagService tagService, CalendarService calendarService,
-                                ProfileService imageService, StatisticService statisticService, PostCommentsService postCommentsService, ModerationService moderationService) {
-        this.initResponse = initResponse;
-        this.settingService = settingService;
-        this.tagService = tagService;
-        this.calendarService = calendarService;
-        this.profileService = imageService;
-        this.statisticService = statisticService;
-        this.postCommentsService = postCommentsService;
-        this.moderationService = moderationService;
-    }
 
     @GetMapping("/init")
     public InitResponse init() {
@@ -100,7 +89,6 @@ public class ApiGeneralController {
     @PreAuthorize("hasAuthority('user:write')")
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ErrorsResponse imagePost(@RequestParam MultipartFile image, HttpServletRequest request, Principal principal) throws IOException {
-        System.out.println("postImage controller");
         return ImageDownloadService.addImage(image, request, principal);
     }
 

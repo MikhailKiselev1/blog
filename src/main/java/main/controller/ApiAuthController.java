@@ -1,5 +1,6 @@
 package main.controller;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.EditPasswordRequest;
 import main.api.request.RestoreRequest;
 import main.api.response.CaptchaResponse;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.security.Principal;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
@@ -31,16 +33,6 @@ public class ApiAuthController {
     private final RestoreService restoreService;
     private final PasswordService passwordService;
 
-
-    @Autowired
-    public ApiAuthController(CaptchaService captchaService, RegisterService registerService,
-                             LoginService loginService, RestoreService restoreService, PasswordService passwordService) {
-        this.captchaService = captchaService;
-        this.registerService = registerService;
-        this.loginService = loginService;
-        this.restoreService = restoreService;
-        this.passwordService = passwordService;
-    }
 
     @GetMapping("/captcha")
     public CaptchaResponse captcha() throws IOException {
@@ -70,7 +62,7 @@ public class ApiAuthController {
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> check(Principal principal) {
         if (principal == null) {
-            return ResponseEntity.ok(new LoginResponse());
+            return ResponseEntity.ok(LoginResponse.builder().build());
         }
         return ResponseEntity.ok(loginService.getCheck(principal.getName()));
     }

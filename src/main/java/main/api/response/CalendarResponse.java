@@ -1,6 +1,7 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 @Data
+@Builder
 public class CalendarResponse {
 
     TreeSet<String> years;

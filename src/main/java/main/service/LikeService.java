@@ -1,32 +1,26 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.request.LikeRequest;
 import main.api.response.ErrorsResponse;
 import main.model.Post;
 import main.model.PostVotes;
 import main.repositories.PostRepository;
 import main.repositories.PostVotesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class LikeService {
 
     private final PostVotesRepository postVotesRepository;
     private final PostRepository postRepository;
 
-    @Autowired
-    public LikeService(PostVotesRepository postVotesRepository, PostRepository postRepository) {
-        this.postVotesRepository = postVotesRepository;
-        this.postRepository = postRepository;
-    }
 
     public ErrorsResponse setLike(LikeRequest request, Principal principal, int value) {
-
-        ErrorsResponse errorsResponse = new ErrorsResponse();
 
         Post post = postRepository.findById(request.getPostId()).orElseThrow();
         PostVotes postVotes = post.getPostVotesList().stream()
@@ -38,17 +32,16 @@ public class LikeService {
             postVotes.setPostsId(post);
             postVotes.setTime(LocalDateTime.now());
             postVotes.setValue(value);
-            errorsResponse.setResult(true);
             postVotesRepository.save(postVotes);
+            return ErrorsResponse.builder()
+                    .result(true)
+                    .build();
         } else if (postVotes.getValue() == value) {
-            errorsResponse.setResult(false);
-            return errorsResponse;
+            return ErrorsResponse.builder().result(false).build();
         } else {
-
             postVotes.setValue(value);
-            errorsResponse.setResult(true);
+            postVotesRepository.save(postVotes);
+            return ErrorsResponse.builder().result(true).build();
         }
-        postVotesRepository.save(postVotes);
-        return errorsResponse;
     }
 }

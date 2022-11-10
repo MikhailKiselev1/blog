@@ -1,8 +1,8 @@
 package main.service;
 
+import lombok.RequiredArgsConstructor;
 import main.api.response.CalendarResponse;
 import main.repositories.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,24 +11,18 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 @Service
+@RequiredArgsConstructor
 public class CalendarService {
 
     private final PostRepository postRepository;
-    private CalendarResponse calendarResponse;
     private final DateTimeFormatter yearFormat = DateTimeFormatter.ofPattern("yyyy");
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    @Autowired
-    public CalendarService(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
 
 
     public CalendarResponse getCalendar(String year) {
         if (year == null) {
             year = LocalDate.now().format(yearFormat);
         }
-        calendarResponse = new CalendarResponse();
         TreeSet<String> years = new TreeSet<>();
         TreeMap<String, Integer> postCount = new TreeMap<>();
         String finalYear = year;
@@ -43,8 +37,9 @@ public class CalendarService {
                 }
             }
         });
-        calendarResponse.setYears(years);
-        calendarResponse.setPosts(postCount);
-        return calendarResponse;
+        return CalendarResponse.builder()
+                .years(years)
+                .posts(postCount)
+                .build();
     }
 }
