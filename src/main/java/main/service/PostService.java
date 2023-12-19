@@ -26,6 +26,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling posts.
+ */
 @Service
 public class PostService {
 
@@ -45,6 +48,14 @@ public class PostService {
     }
 
 
+    /**
+     * Gets posts based on the specified parameters.
+     *
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @param mode   the mode for sorting (recent, popular, best, early)
+     * @return PostGetResponse containing the list of posts and count
+     */
     public PostGetResponse getPost(Integer offset, Integer limit, String mode) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
@@ -57,6 +68,14 @@ public class PostService {
         return postsResponse;
     }
 
+    /**
+     * Gets posts based on search query.
+     *
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @param query  the search query
+     * @return PostGetResponse containing the list of posts and count
+     */
     public PostGetResponse getPostSearch(Integer offset, Integer limit, String query) {
         if (query.matches("[\\s]") || query.equals("")) {
             return getPost(offset, limit, "recent");
@@ -75,6 +94,15 @@ public class PostService {
         }
     }
 
+    /**
+     * Gets posts based on date.
+     *
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @param mode   the mode for sorting (recent, popular, best, early)
+     * @param date   the date to filter posts
+     * @return PostGetResponse containing the list of posts and count
+     */
     public PostGetResponse getPostByDate(Integer offset, Integer limit, String mode, String date) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
@@ -88,6 +116,15 @@ public class PostService {
         return postsResponse;
     }
 
+    /**
+     * Gets posts based on tag.
+     *
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @param mode   the mode for sorting (recent, popular, best, early)
+     * @param tag    the tag to filter posts
+     * @return PostGetResponse containing the list of posts and count
+     */
     public PostGetResponse getPostByTag(Integer offset, Integer limit, String mode, String tag) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
@@ -102,6 +139,13 @@ public class PostService {
         return postsResponse;
     }
 
+    /**
+     * Gets a specific post by ID.
+     *
+     * @param id        the ID of the post
+     * @param principal the authenticated user principal
+     * @return PostIdResponse containing the details of the post
+     */
     public PostIdResponse getPostById(int id, Principal principal) {
         PostIdResponse postIdResponse = new PostIdResponse();
         User user = userRepository.findById(Integer.parseInt(principal.getName())).orElse(null);
@@ -149,6 +193,15 @@ public class PostService {
         return postIdResponse;
     }
 
+    /**
+     * Gets posts authored by the authenticated user.
+     *
+     * @param offset    the offset for pagination
+     * @param limit     the limit for pagination
+     * @param status    the status of the posts (inactive, pending, declined, published)
+     * @param principal the authenticated user principal
+     * @return PostGetResponse containing the list of user's posts and count
+     */
     public PostGetResponse getMyPosts(Integer offset, Integer limit, String status, Principal principal) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
@@ -162,6 +215,15 @@ public class PostService {
         return postsResponse;
     }
 
+    /**
+     * Gets posts for moderation.
+     *
+     * @param offset    the offset for pagination
+     * @param limit     the limit for pagination
+     * @param status    the status of the posts (new, declined, accepted)
+     * @param principal the authenticated user principal
+     * @return PostGetResponse containing the list of posts for moderation and count
+     */
     public PostGetResponse getPostModeration(Integer offset, Integer limit, String status, Principal principal) {
         PostGetResponse postsResponse = new PostGetResponse();
         List<PostDto> postDtoList = new ArrayList<>();
@@ -175,6 +237,13 @@ public class PostService {
         return postsResponse;
     }
 
+    /**
+     * Handles setting a post.
+     *
+     * @param postRequest the PostRequest containing details of the post
+     * @param principal   the authenticated user principal
+     * @return ErrorsResponse indicating the status of setting the post
+     */
     public ErrorsResponse setPost(PostRequest postRequest, Principal principal) {
 
         HashMap<String, String> errors = new HashMap<>();
@@ -214,6 +283,14 @@ public class PostService {
                 .build();
     }
 
+    /**
+     * Handles editing a post.
+     *
+     * @param id           the ID of the post to edit
+     * @param postRequest  the PostRequest containing details of the edited post
+     * @param principal    the authenticated user principal
+     * @return ErrorsResponse indicating the status of editing the post
+     */
     public ErrorsResponse editPost(int id, PostRequest postRequest, Principal principal) {
 
         HashMap<String, String> errors = new HashMap<>();
@@ -273,6 +350,12 @@ public class PostService {
         }
     }
 
+    /**
+     * Helper method to create a PostDto from a Post entity.
+     *
+     * @param p the Post entity
+     * @return PostDto containing details of the post
+     */
     private PostDto addPostDto(Post p) {
         PostDto postDto = new PostDto();
         postDto.setId(p.getId());
@@ -293,6 +376,12 @@ public class PostService {
         return postDto;
     }
 
+    /**
+     * Helper method to set tags for a post.
+     *
+     * @param listTags the list of tags
+     * @param post     the post entity
+     */
     private void setTags(List<String> listTags, Post post) {
         listTags.forEach(tags -> {
             Tag repositoryTag = tagRepository.findByName((tags)).orElse(null);
@@ -312,7 +401,14 @@ public class PostService {
         });
     }
 
-
+    /**
+     * Helper method to get a sorted collection of posts based on mode, offset, and limit.
+     *
+     * @param mode   the mode for sorting (recent, popular, best, early)
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @return List of sorted posts
+     */
     private List<Post> getSortedCollection(String mode, Integer offset, Integer limit) {
         List<Post> startList;
 
@@ -336,6 +432,15 @@ public class PostService {
         return getFinishList(startList, offset, limit);
     }
 
+    /**
+     * Helper method to get a sorted collection of user's posts based on status, offset, and limit.
+     *
+     * @param status the status of the posts (inactive, pending, declined, published)
+     * @param offset the offset for pagination
+     * @param limit  the limit for pagination
+     * @param userId the ID of the user
+     * @return List of sorted user's posts
+     */
     private List<Post> getMySortedCollection(String status, Integer offset,
                                              Integer limit, int userId) {
         List<Post> startList;
@@ -361,6 +466,15 @@ public class PostService {
         return getFinishList(startList, offset, limit);
     }
 
+    /**
+     * Helper method to get a sorted collection of moderator's posts based on status, offset, and limit.
+     *
+     * @param status    the status of the posts (new, declined, accepted)
+     * @param offset    the offset for pagination
+     * @param limit     the limit for pagination
+     * @param principal the authenticated user principal
+     * @return List of sorted moderator's posts
+     */
     private List<Post> getModeratorSortedCollection(String status, Integer offset, Integer limit, Principal principal) {
         List<Post> startList;
         int adminId = Integer.parseInt(principal.getName());
@@ -382,7 +496,14 @@ public class PostService {
         return getFinishList(startList, offset, limit);
     }
 
-    //Данный метод выдает посты, согласно настройкам
+    /**
+     * Helper method to get the final list of posts based on startList, offset, and limit.
+     *
+     * @param startList the initial list of posts
+     * @param offset    the offset for pagination
+     * @param limit     the limit for pagination
+     * @return List of final posts
+     */
     private List<Post> getFinishList(List<Post> startList, int offset, int limit) {
         if (startList.size() < limit) {
             limit = startList.size();

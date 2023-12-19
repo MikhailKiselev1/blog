@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
+/**
+ * Service responsible for handling password-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class PasswordService {
@@ -20,7 +23,12 @@ public class PasswordService {
     private final CaptchaRepository captchaRepository;
     private final UserRepository userRepository;
 
-
+    /**
+     * Handles the process of updating a user's password.
+     *
+     * @param request the EditPasswordRequest containing the code, captcha, and new password
+     * @return ErrorsResponse indicating the status of the password update process
+     */
     public ErrorsResponse getPassword(EditPasswordRequest request) {
         User user = userRepository.findByCode(request.getCode()).orElse(null);
         CaptchaCodes captchaCodes = captchaRepository.findByCode(request.getCaptcha()).orElseThrow();

@@ -30,11 +30,21 @@ public class ImageDownloadService{
     private static final Pattern FILE_PATTERN = Pattern.compile("^(.*)(.)(png|jpeg)$");
     private static UserRepository userRepository;
 
+    /**
+     * Service class handling image-related operations.
+     */
     @Autowired
     public ImageDownloadService(UserRepository userRepository) {
         ImageDownloadService.userRepository = userRepository;
     }
 
+    /**
+     * Handles the upload of an image.
+     *
+     * @param image the image file to upload
+     * @return ErrorsResponse indicating the status of the image upload
+     * @throws IOException if an I/O error occurs
+     */
     public ErrorsResponse postImage(MultipartFile image) throws IOException {
 
 
@@ -76,6 +86,15 @@ public class ImageDownloadService{
         }
     }
 
+    /**
+     * Handles the upload of an image with user association.
+     *
+     * @param image    the image file to upload
+     * @param request  the HTTP servlet request
+     * @param principal the authenticated user principal
+     * @return ErrorsResponse indicating the status of the image upload
+     * @throws IOException if an I/O error occurs
+     */
     public static ErrorsResponse addImage(MultipartFile image,
                                 HttpServletRequest request,
                                 Principal principal) throws IOException {
@@ -121,6 +140,12 @@ public class ImageDownloadService{
         }
     }
 
+/**
+ * Generates a random path for image storage.
+ *
+ * @param nameLength the length of the random path name
+ * @return the generated image storage path
+ */
     public static String getImageGenerationPath(int nameLength) {
         return new StringBuilder("src/main/upload/").append(RandomStringUtils.randomAlphabetic(nameLength))
                 .append("/").append(RandomStringUtils.randomAlphabetic(nameLength))

@@ -13,6 +13,9 @@ import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Service responsible for providing statistical information about posts and votes.
+ */
 @Service
 @RequiredArgsConstructor
 public class StatisticService {
@@ -20,6 +23,12 @@ public class StatisticService {
     private final PostRepository postRepository;
     private final PostVotesRepository postVotesRepository;
 
+    /**
+     * Retrieves the statistical information for the authenticated user's posts and votes.
+     *
+     * @param principal the authenticated user principal
+     * @return StatisticResponse containing the statistical information
+     */
     public StatisticResponse getStatisticMy(Principal principal) {
 
         StatisticResponse statisticResponse = new StatisticResponse();
@@ -40,6 +49,11 @@ public class StatisticService {
         return statisticResponse;
     }
 
+    /**
+     * Retrieves the overall statistical information for all posts and votes.
+     *
+     * @return StatisticResponse containing the overall statistical information
+     */
     public StatisticResponse getStatisticAll() {
 
         StatisticResponse statisticResponse = new StatisticResponse();

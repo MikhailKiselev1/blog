@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Service responsible for handling tag-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class TagService {
@@ -20,6 +23,12 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
+    /**
+     * Retrieves tags and their weights based on popularity.
+     *
+     * @param query the tag query (can be null)
+     * @return TagsResponse containing a list of TagDto with tag information
+     */
     public TagsResponse getTag(String query) {
 
         List<Tag> tagList = tagRepository.findAllActualTags();

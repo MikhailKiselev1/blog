@@ -9,6 +9,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsible for handling password restoration requests.
+ */
 @Service
 @RequiredArgsConstructor
 public class RestoreService {
@@ -17,7 +20,12 @@ public class RestoreService {
     private final JavaMailSender mailSender;
     private final String FROM_EMAIL_ADDRESS = "blogengine@mail.ru";
 
-
+    /**
+     * Processes a password restoration request.
+     *
+     * @param request the RestoreRequest containing user email for password restoration
+     * @return RestoreResponse indicating the result of the restoration process
+     */
     public RestoreResponse getRestore(RestoreRequest request) {
         RestoreResponse response = new RestoreResponse();
         response.setResult(false);

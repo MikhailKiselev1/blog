@@ -20,6 +20,14 @@ public class LikeService {
     private final PostRepository postRepository;
 
 
+    /**
+     * Handles setting a like or dislike for a post.
+     *
+     * @param request   the LikeRequest containing information about the liked or disliked post
+     * @param principal the authenticated user principal
+     * @param value     the value indicating like (1) or dislike (-1)
+     * @return ErrorsResponse indicating the status of the like or dislike action
+     */
     public ErrorsResponse setLike(LikeRequest request, Principal principal, int value) {
 
         Post post = postRepository.findById(request.getPostId()).orElseThrow();

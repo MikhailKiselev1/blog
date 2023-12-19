@@ -6,13 +6,20 @@ import main.api.response.SettingResponse;
 import main.repositories.GlobalSettingRepository;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * Service responsible for handling application settings.
+ */
 @Service
 @RequiredArgsConstructor
 public class SettingService {
 
     private final GlobalSettingRepository globalSettingRepository;
 
+    /**
+     * Retrieves the current application settings.
+     *
+     * @return SettingResponse containing the current application settings
+     */
     public SettingResponse getSetting() {
 
         SettingResponse settingResponse = new SettingResponse();
@@ -28,6 +35,11 @@ public class SettingService {
         return settingResponse;
     }
 
+    /**
+     * Updates the application settings based on the provided SettingRequest.
+     *
+     * @param settingRequest the SettingRequest containing updated settings
+     */
     public void putSetting(SettingRequest settingRequest) {
 
         globalSettingRepository.findAll().forEach(globalSetting -> {
@@ -45,6 +57,12 @@ public class SettingService {
 
     }
 
+    /**
+     * Converts a boolean value to its corresponding "YES" or "NO" string representation.
+     *
+     * @param result the boolean value to be converted
+     * @return "YES" if true, "NO" if false
+     */
     private String booleanToString(boolean result) {
         if (result) {
             return "YES";

@@ -14,6 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for handling user login and authentication.
+ */
 @Service
 @RequiredArgsConstructor
 public class LoginService {
@@ -23,6 +26,12 @@ public class LoginService {
     private final AuthenticationManager authenticationManager;
 
 
+    /**
+     * Retrieves a user based on the provided login credentials.
+     *
+     * @param loginRequest the LoginRequest containing user login information
+     * @return LoginResponse containing the result of the login attempt and user information
+     */
     public LoginResponse getUser(LoginRequest loginRequest) {
 
         User currentUser = userRepository.findByEmail(loginRequest.getEmail()).
@@ -40,6 +49,12 @@ public class LoginService {
                 .build();
     }
 
+    /**
+     * Retrieves user information for the provided user ID.
+     *
+     * @param id the user ID
+     * @return LoginResponse containing the result of the operation and user information
+     */
     public LoginResponse getCheck(String id) {
 
         main.model.User currentUser =
@@ -52,6 +67,12 @@ public class LoginService {
                 .build();
     }
 
+    /**
+     * Retrieves a LoginUserDto based on the provided User entity.
+     *
+     * @param user the User entity
+     * @return LoginUserDto containing user information
+     */
     private LoginUserDto getLoginUserDto(User user) {
         return LoginUserDto.builder()
                 .id(user.getId())

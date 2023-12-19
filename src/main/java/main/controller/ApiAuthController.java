@@ -10,7 +10,6 @@ import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
 import main.api.response.RestoreResponse;
 import main.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
+/**
+ * REST Controller managing authentication and authorization.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -34,22 +36,44 @@ public class ApiAuthController {
     private final PasswordService passwordService;
 
 
+    /**
+     * Service for handling captchas.
+     */
     @GetMapping("/captcha")
     public CaptchaResponse captcha() throws IOException {
         return captchaService.getCaptcha();
     }
 
+    /**
+     * Service for user registration.
+     *
+     * @param registerForm Registration request.
+     * @return Response containing errors if any.
+     */
     @PostMapping("/register")
     public ErrorsResponse register(@RequestBody RegisterRequest registerForm) {
         return registerService.getRegister(registerForm);
     }
 
+    /**
+     * Service for user login.
+     *
+     * @param loginRequest Login request.
+     * @return Response containing login information.
+     */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) {
         return loginService.getUser(loginRequest);
     }
 
 
+    /**
+     * Logout endpoint.
+     *
+     * @param request  HTTP servlet request.
+     * @param response HTTP servlet response.
+     * @return Forward to the home page.
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -59,6 +83,12 @@ public class ApiAuthController {
         return "forward:/";
     }
 
+    /**
+     * Check user authentication status.
+     *
+     * @param principal User principal.
+     * @return Response containing login information.
+     */
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> check(Principal principal) {
         if (principal == null) {
@@ -67,11 +97,23 @@ public class ApiAuthController {
         return ResponseEntity.ok(loginService.getCheck(principal.getName()));
     }
 
+    /**
+     * Service for restoring user account.
+     *
+     * @param request Restore request.
+     * @return Response containing restore information.
+     */
     @PostMapping("/restore")
     public RestoreResponse restore(@RequestBody RestoreRequest request) {
         return restoreService.getRestore(request);
     }
 
+    /**
+     * Service for editing user password.
+     *
+     * @param request Edit password request.
+     * @return Response containing errors if any.
+     */
     @PostMapping("/password")
     public ErrorsResponse editPassword(@RequestBody EditPasswordRequest request) {
         return passwordService.getPassword(request);

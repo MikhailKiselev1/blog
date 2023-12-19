@@ -13,16 +13,29 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Service responsible for handling user registration.
+ */
 @Service
 public class RegisterService {
 
     private final UserRepository userRepository;
 
-
+    /**
+     * Constructor for RegisterService.
+     *
+     * @param userRepository the repository for user-related operations
+     */
     public RegisterService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Processes user registration based on the provided registration form.
+     *
+     * @param registerForm the registration form containing user details
+     * @return ErrorsResponse indicating the status of the registration process
+     */
     public ErrorsResponse getRegister(RegisterRequest registerForm) {
 
         if (getErrors(registerForm).size() != 0) {
@@ -40,6 +53,12 @@ public class RegisterService {
 
     }
 
+    /**
+     * Saves a new user based on the provided registration form.
+     *
+     * @param registerForm the registration form containing user details
+     * @return the newly created user
+     */
     private User saveUser(RegisterRequest registerForm) {
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         User user = new User();
@@ -53,6 +72,12 @@ public class RegisterService {
         return user;
     }
 
+    /**
+     * Retrieves errors related to user registration based on the provided registration form.
+     *
+     * @param registerForm the registration form containing user details
+     * @return a map containing error messages, if any
+     */
     private HashMap<String, String> getErrors(RegisterRequest registerForm) {
 
         HashMap<String, String> errors = new HashMap<>();

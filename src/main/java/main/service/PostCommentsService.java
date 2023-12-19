@@ -14,6 +14,9 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
+/**
+ * Service responsible for handling post comments.
+ */
 @Service
 @RequiredArgsConstructor
 public class PostCommentsService {
@@ -22,7 +25,13 @@ public class PostCommentsService {
     private final PostCommentsRepository postCommentsRepository;
     private final UserRepository userRepository;
 
-
+    /**
+     * Handles posting a comment on a post.
+     *
+     * @param request   the PostCommentRequest containing details of the comment
+     * @param principal the authenticated user principal
+     * @return PostCommentResponse indicating the status of the comment posting
+     */
     public PostCommentResponse postComments(PostCommentRequest request, Principal principal) {
         if (request.getText().length() < 3) {
             HashMap<String, String> errors = new HashMap<>();

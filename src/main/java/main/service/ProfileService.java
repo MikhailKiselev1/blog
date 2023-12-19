@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * Service responsible for handling user profile-related operations.
+ */
 @Service
 public class ProfileService {
 
@@ -44,7 +47,19 @@ public class ProfileService {
         this.userRepository = userRepository;
     }
 
-
+    /**
+     * Handles profile image editing, including email, name, password, and photo.
+     *
+     * @param photo          the byte array representing the user's photo
+     * @param name           the user's name
+     * @param email          the user's email
+     * @param password       the user's password
+     * @param removePhoto    flag indicating whether to remove the user's photo
+     * @param principal      the authenticated user principal
+     * @param request        the HTTP servlet request
+     * @return ErrorsResponse indicating the status of the profile image edit operation
+     * @throws IOException if an IO exception occurs
+     */
     public ErrorsResponse profileImageEdit(byte[] photo, String name, String email, String password,
                                       Integer removePhoto, Principal principal, HttpServletRequest request) throws IOException {
         System.out.println(photo.toString());
@@ -81,6 +96,14 @@ public class ProfileService {
         return ErrorsResponse.builder().result(true).build();
     }
 
+    /**
+     * Adds a user image to the system.
+     *
+     * @param photo      the byte array representing the user's photo
+     * @param request    the HTTP servlet request
+     * @param principal  the authenticated user principal
+     * @throws IOException if an IO exception occurs
+     */
     public void addImage(byte[] photo,
                          HttpServletRequest request,
                          Principal principal) throws IOException {
@@ -96,6 +119,14 @@ public class ProfileService {
         System.out.println(userRepository.findById(Integer.parseInt(principal.getName())).orElseThrow().getPhoto());
     }
 
+    /**
+     * Handles profile editing, including email, name, password, and photo removal.
+     *
+     * @param request    the MyProfileRequest containing details of the profile edit
+     * @param principal  the authenticated user principal
+     * @return ErrorsResponse indicating the status of the profile edit operation
+     * @throws IOException if an IO exception occurs
+     */
     public ErrorsResponse profileEdit(MyProfileRequest request, Principal principal) throws IOException {
 
         HashMap<String, String> errors = new HashMap<>();
@@ -132,7 +163,14 @@ public class ProfileService {
                 .build();
     }
 
-
+    /**
+     * Checks the provided email against the current user's email and validates its format.
+     *
+     * @param email      the email to be checked
+     * @param userEmail  the current user's email
+     * @param errors     the map to store validation errors
+     * @return the updated errors map
+     */
     private HashMap<String, String> checkEmail(String email, String userEmail,
                                                HashMap<String, String> errors) {
         if (userRepository.findByEmail(email).isPresent()
@@ -145,6 +183,13 @@ public class ProfileService {
         return errors;
     }
 
+    /**
+     * Checks the provided name for its length.
+     *
+     * @param name    the name to be checked
+     * @param errors  the map to store validation errors
+     * @return the updated errors map
+     */
     private HashMap<String, String> checkName(String name, HashMap<String, String> errors) {
         if ( name.length() < 3) {
             errors.put("name", "Имя указано неверно");
@@ -152,6 +197,13 @@ public class ProfileService {
         return errors;
     }
 
+    /**
+     * Checks the provided password for its length.
+     *
+     * @param password  the password to be checked
+     * @param errors    the map to store validation errors
+     * @return the updated errors map
+     */
     private HashMap<String, String> checkPassword(String password, HashMap<String, String> errors) {
         if (password.length() < 6) {
             errors.put("password", "Пароль короче 6-ти символов");

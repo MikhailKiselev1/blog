@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/**
+ * Service class handling calendar-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
@@ -19,6 +22,12 @@ public class CalendarService {
     private final DateTimeFormatter day = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
+    /**
+     * Retrieves calendar data for the specified year.
+     *
+     * @param year the year for which to retrieve calendar data
+     * @return CalendarResponse containing the calendar data
+     */
     public CalendarResponse getCalendar(String year) {
         if (year == null) {
             year = LocalDate.now().format(yearFormat);

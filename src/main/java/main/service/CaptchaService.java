@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
+/**
+ * Service class handling captcha-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class CaptchaService {
@@ -21,6 +24,12 @@ public class CaptchaService {
     private final CaptchaRepository captchaRepository;
 
 
+    /**
+     * Generates and retrieves a new captcha.
+     *
+     * @return CaptchaResponse containing the captcha details
+     * @throws IOException if an I/O error occurs
+     */
     public CaptchaResponse getCaptcha() throws IOException {
 
         captchaRepository.findAll().forEach(captcha -> {
