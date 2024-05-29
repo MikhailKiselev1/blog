@@ -410,26 +410,26 @@ public class PostService {
      * @return List of sorted posts
      */
     private List<Post> getSortedCollection(String mode, Integer offset, Integer limit) {
-        List<Post> startList;
+        List<Post> postList;
 
         switch (mode) {
             case "recent":
-                startList = (List<Post>) postRepository.findAllPostOrderByRecent();
+                postList = (List<Post>) postRepository.findPostOrderByRecent(offset, limit);
                 break;
             case "popular":
-                startList = (List<Post>) postRepository.findAllPostOrderByPopular();
+                postList = (List<Post>) postRepository.findPostOrderByPopular(offset, limit);
                 break;
             case "best":
-                startList = (List<Post>) postRepository.findAllPostOrderByBest();
+                postList = (List<Post>) postRepository.findPostOrderByBest(offset, limit);
                 break;
             case "early":
-                startList = (List<Post>) postRepository.findAllPostOrderByEarly();
+                postList = (List<Post>) postRepository.findAllPostOrderByEarly(offset, limit);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + mode);
         }
 
-        return getFinishList(startList, offset, limit);
+        return postList;
     }
 
     /**
@@ -443,27 +443,27 @@ public class PostService {
      */
     private List<Post> getMySortedCollection(String status, Integer offset,
                                              Integer limit, int userId) {
-        List<Post> startList;
+        List<Post> postList;
 
 
         switch (status) {
             case "inactive":
-                startList = (List<Post>) postRepository.findMyPostOrderByInactive(userId);
+                postList = (List<Post>) postRepository.findMyPostOrderByInactive(userId, offset, limit);
                 break;
             case "pending":
-                startList = (List<Post>) postRepository.findMyPostOrderByPending(userId);
+                postList = (List<Post>) postRepository.findMyPostOrderByPending(userId, offset, limit);
                 break;
             case "declined":
-                startList = (List<Post>) postRepository.findMyPostOrderByDeclined(userId);
+                postList = (List<Post>) postRepository.findMyPostOrderByDeclined(userId, offset, limit);
                 break;
             case "published":
-                startList = (List<Post>) postRepository.findMyPostOrderByPublished(userId);;
+                postList = (List<Post>) postRepository.findMyPostOrderByPublished(userId, offset, limit);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + status);
         }
 
-        return getFinishList(startList, offset, limit);
+        return postList;
     }
 
     /**
@@ -476,42 +476,23 @@ public class PostService {
      * @return List of sorted moderator's posts
      */
     private List<Post> getModeratorSortedCollection(String status, Integer offset, Integer limit, Principal principal) {
-        List<Post> startList;
+        List<Post> postList;
         int adminId = Integer.parseInt(principal.getName());
 
         switch (status) {
             case "new":
-                startList = (List<Post>) postRepository.findAllNewPostByModerate();
+                postList = (List<Post>) postRepository.findNewPostByModerate(offset, limit);
                 break;
             case "declined":
-                startList = (List<Post>) postRepository.findAllDeclinedPostByModerate(adminId);
+                postList = (List<Post>) postRepository.findDeclinedPostByModerate(adminId, offset, limit);
                 break;
             case "accepted":
-                startList = (List<Post>) postRepository.findAllAcceptedPostByModerate(adminId);
+                postList = (List<Post>) postRepository.findAcceptedPostByModerate(adminId, offset, limit);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + status);
         }
 
-        return getFinishList(startList, offset, limit);
-    }
-
-    /**
-     * Helper method to get the final list of posts based on startList, offset, and limit.
-     *
-     * @param startList the initial list of posts
-     * @param offset    the offset for pagination
-     * @param limit     the limit for pagination
-     * @return List of final posts
-     */
-    private List<Post> getFinishList(List<Post> startList, int offset, int limit) {
-        if (startList.size() < limit) {
-            limit = startList.size();
-        }
-        ArrayList<Post> finishList = new ArrayList<>();
-        for (int i = offset; i < limit; i++) {
-            finishList.add(startList.get(i));
-        }
-        return finishList;
+        return postList;
     }
 }

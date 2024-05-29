@@ -19,6 +19,7 @@ public class RestoreService {
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final String FROM_EMAIL_ADDRESS = "blogengine@mail.ru";
+    private final String link = "https://kiselev-java.herokuapp.com/login/change-password/";
 
     /**
      * Processes a password restoration request.
@@ -36,7 +37,7 @@ public class RestoreService {
             message.setFrom(FROM_EMAIL_ADDRESS);
             message.setTo(request.getEmail());
             message.setSubject ("Subject: Simple Mail");
-            message.setText ("Ссылка для восстановления пароля: https://kiselev-java.herokuapp.com/login/change-password/" + hash);
+            message.setText ("Ссылка для восстановления пароля: " + link + hash);
 
             mailSender.send(message);
 
